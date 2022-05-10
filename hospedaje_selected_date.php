@@ -196,8 +196,28 @@ print '
 	background: Silver;
 	color:Green;
 }
+.btnbtn {
+    display: block;
+    width: 100%;
+    color: white;
+    font-weight: bold;
+    padding: 18px 28px;
+    background-color: #9b75a6;
+    text-align: center;
+    font-size: 18px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+.btnbtn:hover {
+  background-color: #83648c;
+  color: white;
+  border-radius: 5px;
+}
+
 </style>';
 
+print '<div class="div-table-responsive-no-min">';
 print '<form action="'.$_SERVER["PHP_SELF"].'" method="POST" id="target" >';
 print '<input type="hidden" name="token" value="'.newToken().'">';
 
@@ -211,7 +231,7 @@ print '</td>';
 
 print "</tr>";
 
-print "<tr>";//DATEPICKERS
+print "<tr align='center'>";//DATEPICKERS
 print "<td>";
 print "<div id='date_start'></div>";
 print "</td>";
@@ -228,12 +248,12 @@ print '</td>';
 print "</tr>";
 
 //BOTON
-print "<tr align='center' >";
-print "<td colspan='3'>";
-print '<div style="display: flex;align-items: center; "><button type="submit" class="butAction" name="save">';
+print "<tr>";
+print "<td colspan='3' >";
+print '<div style="display: flex;align-items: center; "><button type="submit" class="btnbtn" name="save">';
 print $langs->trans("btnSelect");
 print '</button>';
-print '<img style="display: none;" id="loader"src="img/spinner.gif" height="25px">';
+print '<img style="display: none;" id="loader"src="img/ajax-loader.gif" height="25px">';
 print '</div>';
 print '</td>';
 print '</tr>';
@@ -241,6 +261,7 @@ print '</tr>';
 print '</table>';
 print '</form>';
 
+print '</div>';
 ?>
 
 <script type="text/javascript" language="javascript">
