@@ -1,0 +1,71 @@
+# Copyright (C) 2021 SuperAdmin
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+#
+# Generic
+#
+Guest = Guest
+Persons = Persons
+Reduction = Reduction
+Days = Days
+Ctd_Persons = Number of paying people 
+xtt0 = days
+xtt1 = From
+xtt2 = to
+aviso1 = Don't forget to select a row price for the operation.
+titletb = Select Check-in date and Check-out date.
+btnSelect = Save
+alerta1 = Before continuing, you must select a person's.
+Ctd_guest = Number of paying guests
+Dto_guest = Reduction
+aviso2 = Before continuing, you must select a location.
+avisoguest = Do not forget to select a contributing client, or one that belongs to our community.
+avisopeople = Don't forget to select a location. Necessary to perform the operation.
+
+
+
+
+# Module label 'ModuleHOSPEDAJEName'
+ModuleHOSPEDAJEName = HOSPEDAJE
+# Module description 'ModuleHOSPEDAJEDesc'
+ModuleHOSPEDAJEDesc = HOSPEDAJE description
+#
+# Admin page
+#
+HOSPEDAJESetup = HOSPEDAJE setup
+Settings = Settings
+HOSPEDAJESetupPage = HOSPEDAJE setup page
+HOSPEDAJE_MYPARAM1 = My param 1
+HOSPEDAJE_MYPARAM1Tooltip = My param 1 tooltip
+HOSPEDAJE_MYPARAM2=My param 2
+HOSPEDAJE_MYPARAM2Tooltip=My param 2 tooltip
+
+#
+# About page
+#
+About = About
+HOSPEDAJEAbout = About HOSPEDAJE
+HOSPEDAJEAboutPage = HOSPEDAJE about page
+
+#
+# Sample page
+#
+MyPageName = My page name
+
+#
+# Sample widget
+#
+MyWidget = My widget
+MyWidgetDescription = My widget description

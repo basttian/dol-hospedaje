@@ -1,0 +1,68 @@
+# Copyright (C) 2021 SuperAdmin
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see .
+
+#
+# Generic
+#
+Guest = Huesped/s
+Persons = Persona/s
+Reduction = Reducciones
+Days = Dias
+Ctd_Persons = Cantidad de personas que abonan
+xtt0 = dias
+xtt1 = Desde
+xtt2 = Hasta
+aviso1 = No olvide seleccionar un precio de fila para la operación.
+titletb = Seleccione la fecha de entrada y la fecha de salida.
+btnSelect = Seleccionar fechas
+alerta1 = Antes de continuar, debe seleccionar un precio de fila para la operacion.
+Ctd_guest = Cantidad de invitados que abonan
+Dto_guest = Descuento en porcentaje
+aviso2 = Antes de continuar, debe seleccionar una ubicacion.
+avisoguest = No olvide seleccionar un cliente aportante, o que pertenece a nuestra comunidad.
+avisopeople = No olvide seleccionar una ubicacion. Necesario para realizar la operacion.
+
+# Module label 'ModuleHOSPEDAJEName'
+ModuleHOSPEDAJEName = TakePos | Hospedaje
+# Module description 'ModuleHOSPEDAJEDesc'
+ModuleHOSPEDAJEDesc = Sistema de control de ingreso para camping.
+#
+# Admin page
+#
+HOSPEDAJESetup = Configuracion hospedaje
+Settings = Configuraciones
+HOSPEDAJESetupPage = Hospedaje pagina de configuracion
+HOSPEDAJE_MYPARAM1 = My param 1
+HOSPEDAJE_MYPARAM1Tooltip = My param 1 tooltip
+HOSPEDAJE_MYPARAM2=My param 2
+HOSPEDAJE_MYPARAM2Tooltip=My param 2 tooltip
+
+#
+# About page
+#
+About = Acerca de nosotros
+HOSPEDAJEAbout = Acerca de nosotros
+HOSPEDAJEAboutPage = Pagina acerca de nos.
+
+#
+# Sample page
+#
+MyPageName = My page name
+
+#
+# Sample widget
+#
+MyWidget = Hospedaje 
+MyWidgetDescription = Mi hospedaje descripcion
