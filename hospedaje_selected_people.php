@@ -69,6 +69,10 @@ function console_log( $data ){
     echo '</script>';
 }
 
+// Security check
+if (! $user->rights->hospedaje->hospedaje->posbutton) {
+    accessforbidden();
+}
 
 /*
  * Actions

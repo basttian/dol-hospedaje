@@ -264,7 +264,14 @@ class modHOSPEDAJE extends DolibarrModules
 		$r = 0;
 		// Add here entries to declare new permissions
 		/* BEGIN MODULEBUILDER PERMISSIONS */
+		
 		$this->rights[$r][0] = $this->numero . sprintf("%02d", $r + 1); // Permission id (must not be already used)
+		$this->rights[$r][1] = 'Button TakePos of HOSPEDAJE'; // Permission label
+		$this->rights[$r][4] = 'hospedaje';
+		$this->rights[$r][5] = 'posbutton'; // In php code, permission will be checked by test if ($user->rights->hospedaje->hospedaje->posbutton)
+		$r++;
+		
+		/*$this->rights[$r][0] = $this->numero . sprintf("%02d", $r + 1); // Permission id (must not be already used)
 		$this->rights[$r][1] = 'Read objects of HOSPEDAJE'; // Permission label
 		$this->rights[$r][4] = 'hospedaje';
 		$this->rights[$r][5] = 'read'; // In php code, permission will be checked by test if ($user->rights->hospedaje->hospedaje->read)
@@ -279,7 +286,7 @@ class modHOSPEDAJE extends DolibarrModules
 		$this->rights[$r][4] = 'hospedaje';
 		$this->rights[$r][5] = 'delete'; // In php code, permission will be checked by test if ($user->rights->hospedaje->hospedaje->delete)
 		$r++;
-		/* END MODULEBUILDER PERMISSIONS */
+		 END MODULEBUILDER PERMISSIONS */
 
 		// Main menu entries to add
 		$this->menu = array();

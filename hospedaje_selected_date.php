@@ -50,6 +50,7 @@ require_once DOL_DOCUMENT_ROOT.'/societe/class/societe.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/commonobject.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/date.lib.php';
 
+
 $action = GETPOST('action', 'aZ09');
 $place = (GETPOST('place', 'aZ09') ? GETPOST('place', 'aZ09') : 0);
 $now = dol_now();
@@ -69,7 +70,10 @@ function console_log( $data ){
     echo 'console.log('.json_encode( $data ).')';
     echo '</script>';
 }
-
+// Security check
+if (! $user->rights->hospedaje->hospedaje->posbutton) {
+	accessforbidden();
+}
 
 /*
  * Actions
@@ -178,14 +182,14 @@ $head='<meta name="apple-mobile-web-app-title" content="TakePOS"/>
 <link rel="stylesheet" href="../../takepos/css/pos.css.php">
 <script src="js/moment.js"></script>
 <script src="js/locale/es.js"></script>
+<link rel="stylesheet" href="css/hospedaje.css.php">
+
+
 ';
 top_htmlhead($head, $title, $disablejs, $disablehead, $arrayofjs, $arrayofcss);
-print info_admin($langs->trans("aviso1"));
 
-$form = new Form($db);
+print '<style>
 
-print '
-<style>
 .error {
 	text-align: center;
 	background: Silver;
@@ -196,70 +200,70 @@ print '
 	background: Silver;
 	color:Green;
 }
-.btnbtn {
-    display: block;
-    width: 100%;
-    color: white;
-    font-weight: bold;
-    padding: 18px 28px;
-    background-color: #9b75a6;
-    text-align: center;
-    font-size: 18px;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-}
-.btnbtn:hover {
-  background-color: #83648c;
-  color: white;
-  border-radius: 5px;
+
+.centrediv {
+  display: flex;
+  justify-content: center;
+  align-items: center;   
 }
 
 </style>';
 
-print '<div class="div-table-responsive-no-min">';
+
+$form = new Form($db);
+print '<div class="centrediv">';
+print '<div class="container">';
+
 print '<form action="'.$_SERVER["PHP_SELF"].'" method="POST" id="target" >';
 print '<input type="hidden" name="token" value="'.newToken().'">';
 
-print '<table id="tableta" class="noborder noshadow postablelines" width="100%" >';
-print '<tr class="liste_titre nodrag nodrop">';
-print '<td colspan="3"> ';
-print '<span style="font-size:120%;" class="right">';
+//Texto Aviso
+print '<div class="row">';
+print '<div class="column">';
+print info_admin($langs->trans("aviso1"));
+print '</div>';
+print '</div>';
+
+//Texto Cabecera 2
+print '<div class="row">';
+print '<div class="column">';
+print '<span>';
 print $langs->trans('titletb');
 print '</span>';
-print '</td>';
+print '</div>';
+print '</div>';
 
-print "</tr>";
+print '<hr />';
 
-print "<tr align='center'>";//DATEPICKERS
-print "<td>";
+//DATEPICKERS 1
+print '<div class="row">';
+print '<div class="column">';
 print "<div id='date_start'></div>";
-print "</td>";
-print '<td>';
+print '</div>';
+
+//DATEPICKERS 2
+print '<div class="column">';
+print "<div id='date_end'></div>";
+print '</div>';
+
+//Texto de dias
+print '<div class="column">';
 print '<span id="textinput"></span>';
-print '<br>';
 print '<div class="highlight"><h1 id="p_dias">';
 echo "0 ".$langs->trans("xtt0");
 print '</h1></div>';
-print '</td>';
-print '<td>';
-print "<div id='date_end'></div>";
-print '</td>';
-print "</tr>";
 
-//BOTON
-print "<tr>";
-print "<td colspan='3' >";
-print '<div style="display: flex;align-items: center; "><button type="submit" class="btnbtn" name="save">';
+//Boton
+print '<div style="display: flex;align-items: center; "><button type="submit" class="button-outline" name="save">';
 print $langs->trans("btnSelect");
 print '</button>';
-print '<img style="display: none;" id="loader"src="img/ajax-loader.gif" height="25px">';
+print '<img style="display: none;" id="loader"src="img/ajax-loader.gif" height="20px"></div>';
 print '</div>';
-print '</td>';
-print '</tr>';
+print '</div>';
 
-print '</table>';
+print '<hr />';
 print '</form>';
+print '</div>';
 
 print '</div>';
 ?>

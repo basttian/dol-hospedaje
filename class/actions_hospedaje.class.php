@@ -355,10 +355,15 @@ class ActionsHOSPEDAJE
 		}
 	}
 
+	
 	/* Add here any other hooked methods... */
 	public function ActionButtons($parameters, &$object, &$action, $hookmanager)
 	{
 	    global $conf, $user, $langs;
+	    
+	    // Security check
+	    if ($user->rights->hospedaje->hospedaje->posbutton) {
+	    
 	    //print_r($parameters);
 	    $error = 0; // Error counter
 	    
@@ -366,6 +371,8 @@ class ActionsHOSPEDAJE
 	    if (in_array($parameters['currentcontext'], array('takeposfrontend'))) {	    // do something only for the context 'somecontext1' or 'somecontext2'
 	        // Do what you want here...
 	        // You can for example call global vars like $fieldstosearchall to overwrite them, or update database depending on $action and $_POST values.
+	        
+	        
 	        $langs->loadLangs(array("hospedaje@hospedaje"));
             
             $menu = array(
@@ -373,9 +380,10 @@ class ActionsHOSPEDAJE
 	            ,
 	            ['title'=>'<span class="fa fa-users paddingrightonly"></span><div class="trunc">'.$langs->trans("Guest").'</div>', 'action'=>'$.colorbox({href:\'../custom/hospedaje/hospedaje_selected_guest.php?place=\'+place, width:\'70%\', height:\'80%\', transition:\'none\', iframe:\'false\', title:\''.$langs->trans("Guest").'\'});']
 	            ,
-	            ['title'=>'<span class="fa fa-clock paddingrightonly"></span><div class="trunc">'.$langs->trans("Days").'</div>', 'action'=>'$.colorbox({href:\'../custom/hospedaje/hospedaje_selected_date.php?place=\'+place, width:\'70%\', height:\'80%\', transition:\'none\', iframe:\'false\', title:\''.$langs->trans("Days").'\'});']
+	            ['title'=>'<span class="fa fa-clock paddingrightonly"></span><div class="trunc">'.$langs->trans("Days").'</div>', 'action'=>'$.colorbox({href:\'../custom/hospedaje/hospedaje_selected_date.php?place=\'+place, width:\'85%\', height:\'75%\', transition:\'none\', iframe:\'false\', title:\''.$langs->trans("Days").'\'});']
             ); 
             //return $menu; //version 14 descomentar esta linea
+
 	    }
 	   
 	    if (!$error) {
@@ -385,6 +393,7 @@ class ActionsHOSPEDAJE
 	    } else {
 	        $this->errors[] = 'Error message';
 	        return -1;
+	    }
 	    }
 	}
 	
