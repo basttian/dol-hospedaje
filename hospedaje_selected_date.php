@@ -140,6 +140,7 @@ if ( !empty($days) and $days > 0 ) {
     					parent.$("#poslines").load("<?php echo DOL_URL_ROOT; ?>/custom/hospedaje/hospedaje_actions.php?place=<?php echo $place; ?>&invoiceid=<?php echo $placeid; ?>&action=dayrow&desc="+descp+"&number=<?php echo $row->total_ttc ;?>&qty=<?php echo $days; ?>", function() {
     	                	//parent.$("#poslines").load("invoice.php?action=addnote&place=<?php echo $place; ?>&invoiceid=<?php echo $placeid ;?>&idline=<?php echo $idline ;?>&addnote=<?php echo $days.'%20'.$langs->trans('xtt0').','.'%20'.$langs->trans('from').'%20'.function_($date_start).'%20'.$langs->trans('to').'%20'.function_($date_end) ;?> ", function() {
         						parent.$("#poslines").load("invoice.php?place=<?php echo $place; ?>&invoiceid=<?php echo $placeid ;?> ", function() {
+    			 		 			parent.$(this).find("tr:eq(1)").click().addClass("selected");
                                     parent.$.colorbox.close();
        	                        });
                             //});
@@ -182,13 +183,15 @@ $head='<meta name="apple-mobile-web-app-title" content="TakePOS"/>
 <link rel="stylesheet" href="../../takepos/css/pos.css.php">
 <script src="js/moment.js"></script>
 <script src="js/locale/es.js"></script>
-<link rel="stylesheet" href="css/hospedaje.css.php">
+<link rel="stylesheet" href="css/spectrecss/spectre.min.css">
+<link rel="stylesheet" href="css/spectrecss/spectre-exp.min.css">
+<link rel="stylesheet" href="css/spectrecss/spectre-icons.min.css">
 
 
 ';
 top_htmlhead($head, $title, $disablejs, $disablehead, $arrayofjs, $arrayofcss);
 
-print '<style>
+print '<style type="text/css">
 
 .error {
 	text-align: center;
@@ -206,28 +209,55 @@ print '<style>
   justify-content: center;
   align-items: center;   
 }
+html {
+    height: 100%;
+}
+body {
+    min-height: 100%;
+}
+
+
+.datebox {
+    margin: 5px auto 0;
+    width:120px;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+.avizone{
+    display: inline-block;
+    height:30px;
+    vertical-align: middle;
+    border-top : solid 3px transparent;
+    border-bottom : solid 3px transparent;
+}
+
 
 </style>';
 
 
 $form = new Form($db);
 print '<div class="centrediv">';
-print '<div class="container">';
+
 
 print '<form action="'.$_SERVER["PHP_SELF"].'" method="POST" id="target" >';
 print '<input type="hidden" name="token" value="'.newToken().'">';
 
+print '<div class="container">';
+
 //Texto Aviso
-print '<div class="row">';
-print '<div class="column">';
-print info_admin($langs->trans("aviso1"));
+print '<div class="columns">';
+print '<div class="column col-12 col-xs-12">';
+if(!$conf->global->HOSPEDAJE_MYPARAM_HELP){
+    print info_admin($langs->trans("aviso1"));
+};
 print '</div>';
 print '</div>';
 
 //Texto Cabecera 2
-print '<div class="row">';
-print '<div class="column">';
-print '<span>';
+print '<div class="columns">';
+print '<div class="column col-12 col-xs-12">';
+print '<span class="column col-12 col-xs-12">';
 print $langs->trans('titletb');
 print '</span>';
 print '</div>';
@@ -236,35 +266,65 @@ print '</div>';
 print '<hr />';
 
 //DATEPICKERS 1
-print '<div class="row">';
-print '<div class="column">';
-print "<div id='date_start'></div>";
-print '</div>';
-
-//DATEPICKERS 2
-print '<div class="column">';
-print "<div id='date_end'></div>";
-print '</div>';
-
-//Texto de dias
-print '<div class="column">';
-print '<span id="textinput"></span>';
-print '<div class="highlight"><h1 id="p_dias">';
-echo "0 ".$langs->trans("xtt0");
-print '</h1></div>';
-
-//Boton
-print '<div style="display: flex;align-items: center; "><button type="submit" class="button-outline" name="save">';
-print $langs->trans("btnSelect");
-print '</button>';
-print '<img style="display: none;" id="loader"src="img/ajax-loader.gif" height="20px"></div>';
+print '<div class="columns">';
+print '<div class="column col-12 col-xs-12">';
+//print "<div id='date_start'></div>";
+print $form->selectDate(dol_now('auto'),'date_start',1,1,0,'',1,1,0,0,'','','',0,'','','auto');
 print '</div>';
 print '</div>';
 
 print '<hr />';
-print '</form>';
+
+//DATEPICKERS 2
+print '<div class="columns">';
+print '<div class="column col-12 col-xs-12">';
+//print "<div id='date_end'></div>";
+print $form->selectDate(dol_now('auto'),'date_end',1,1,0,'',1,1,0,0,'','','',0,'','','auto');
+print '</div>';
 print '</div>';
 
+
+print '<hr />';
+
+
+//Leyenda de dias
+print '<div class="columns">';
+print '<div class="column col-12 col-xs-12">';
+print '<span class="column col-12 col-xs-12" id="textinput"></span><hr/>';
+//Texto de dias
+print '<div class="highlight">';
+print'<h1 id="p_dias">';
+echo "0 ".$langs->trans("xtt0");
+print '</h1>';
+print '</div>';
+print '</div>';
+print '</div>';
+
+    
+//Boton
+print '<div class="columns">';
+print '<div class="column col-12 col-xs-12">';
+//print '<div style="display: flex;align-items: center; ">';
+print '<button id="sendbtn" type="submit" class="btn btn-primary btn-lg btn-block" name="save"><i class="icon icon-time"></i> ';
+print $langs->trans("btnSelect");
+print '</button>';
+print '<button style="display: none;" id="loader" class="btn btn-primary loading btn-lg btn-block"></button>';
+//print '<img style="display: none;" id="loader" src="img/ajax-loader.gif" height="20px">';
+//print '</div>';
+print '</div>';
+print '</div>';
+
+//Texto de zona
+print '<br />';
+print '<span style="display: none;" id="zonetext" class="avizone">';
+print '</span>';
+print '<div style="display: none;" class="carga loading"></div>';
+print '<br />';
+
+print '</div>';
+print '<hr />';
+
+print '</form>';
 print '</div>';
 ?>
 
@@ -275,8 +335,8 @@ var date_salida = "";
 var dias = 0;
 
 function diasHospedaje(){
-	date_entrada = $( "#date_start" ).datepicker( "getDate" );
-	date_salida = $( "#date_end" ).datepicker( "getDate" );
+	date_entrada = moment(moment($("#date_start").datepicker("getDate")).format("YYYY-MM-DD")+'T'+$("#date_starthour").val()+':'+$("#date_startmin").val()).valueOf();//$( "#date_start" ).datepicker( "getDate" );
+	date_salida  = moment(moment($("#date_end").datepicker("getDate")).format("YYYY-MM-DD")+'T'+$("#date_endhour").val()+':'+$("#date_endmin").val()).valueOf();//$( "#date_end" ).datepicker( "getDate" );
     diference = parseInt((date_salida - date_entrada) /(1000*60*60*24));
     validate(diference);
   	return diference;
@@ -291,35 +351,85 @@ function validate(arg){
     }
 }
 
+
+
  jQuery(document).ready(function() {
-    
-    /*Establecemos la fecha actual no menor al dia del sistema*/
-	 $( "#date_start" ).datepicker( { minDate: "+d" } );
+
+	 $( "#txtaviso" ).show();
+	 $( '#zonetext' ).hide();
+	 
+	 //Numero de factura
+	 var invoiceid = parent.$("#invoiceid").val();
+	 //console.log("INVOICE ID: "+invoiceid);
+	 
+	 /*Establecemos la fecha actual no menor al dia del sistema*/
+	 $( "#date_start" ).datepicker( { minDate: "+d" } ).removeClass("maxwidthdate").addClass("datebox");
      $( "#date_start" ).datepicker( "option", "minDate", "+d" );
-     $( "#date_end" ).datepicker( { minDate: "+d" } );
+     $( "#date_end" ).datepicker( { minDate: "+d" } ).removeClass("maxwidthdate").addClass("datebox");
      $( "#date_end" ).datepicker( "option", "minDate", "+d" );
 
-	 $('#textinput').html('<?php echo $langs->trans('xtt1')?> '+  moment($("#date_start").datepicker( "getDate" )).format("LL")  +' <?php echo $langs->trans('xtt2')?> '+ moment($( "#date_end" ).datepicker( "getDate" )).format("LL"));
+     /*Actualizamos hipertex*/
+	 function reloaded(){
+		 $('.carga').show();
+		 $('#zonetext').hide();
+		dias = diasHospedaje();
+    	ENTRADA = moment($("#date_start").datepicker("getDate")).format("YYYY-MM-DD")+'T'+$("#date_starthour").val()+':'+$("#date_startmin").val();
+    	SALIDA = moment($("#date_end").datepicker("getDate")).format("YYYY-MM-DD")+'T'+$("#date_endhour").val()+':'+$("#date_endmin").val();
+		$( "#p_dias" ).html(dias +" <?php echo $langs->trans('xtt0')?> ");
+		$('#textinput').html('<?php echo $langs->trans('xtt1')?> '+ moment(ENTRADA).format("LLLL") +' <?php echo $langs->trans('xtt2')?> '+ moment(SALIDA).format("LLLL"));
+		/*Actualizamos la fecha de la zona si es elegida si no null*/
+		if(invoiceid>0){
+        	$.ajax({
+        		type: "POST",
+        		url: "<?php echo DOL_URL_ROOT.'/custom/hospedaje/hospedaje_selected_site.php'; ?>",
+        		data: { action: "updateDates", invoiceid: invoiceid , startdate:date_entrada , enddate:date_salida , token: '<?php echo newToken(); ?>' }
+        	}).done(function( response ) {
+        		console.log(response);
+        		if(response==0){
+            		$('#zonetext').show();
+            		$('.carga').hide();
+            		$('#zonetext').html('<h6><?php echo $langs->trans('zonextt1')?></h6>');
+            		}else{
+            			$('#zonetext').show();
+            			$('.carga').hide();
+            			$('#zonetext').html('<h6><?php echo $langs->trans('zonextt2')?> '+JSON.parse(response)+'</h6>');
+                		}
+        	}).fail(function (jqXHR, textStatus) {
+        		$('.carga').hide();
+        		console.log(textStatus);
+        	});
+    	}else{$('.carga').hide();};
+	};
+
+	 $('#textinput').html('<?php echo $langs->trans('xtt1')?> '+  moment($("#date_start").datepicker( "getDate" )).format("LLLL")  +' <?php echo $langs->trans('xtt2')?> '+ moment($( "#date_end" ).datepicker( "getDate" )).format("LLLL"));
 			var nota = '';
 			var numline = 0;
     		$( "#date_start" ).change(function() {
-              	dias = diasHospedaje();
-				  $( "#p_dias" ).html(dias +" <?php echo $langs->trans('xtt0')?> ");
-				$('#textinput').html('<?php echo $langs->trans('xtt1')?> '+ moment($("#date_start").datepicker( "getDate" )).format("LL") +' <?php echo $langs->trans('xtt2')?> '+ moment($( "#date_end" ).datepicker( "getDate" )).format("LL"));
-            });
-            
+    			reloaded()
+    			});
             $( "#date_end" ).change(function() {
-              	dias = diasHospedaje();
-                $( "#p_dias" ).html(dias +" <?php echo $langs->trans('xtt0')?>");
-				$('#textinput').html('<?php echo $langs->trans('xtt1')?> '+ moment($("#date_start").datepicker( "getDate" )).format("LL") +' <?php echo $langs->trans('xtt2')?> '+ moment($( "#date_end" ).datepicker( "getDate" )).format("LL"));
-            });
+            	reloaded()
+              });
+            $( "#date_starthour" ).change(function() {
+    			reloaded()
+    			});
+            $( "#date_endhour" ).change(function() {
+            	reloaded()
+              });
+            $( "#date_startmin" ).change(function() {
+    			reloaded()
+    			});
+            $( "#date_endmin" ).change(function() {
+            	reloaded()
+              });
     		
             $( "#target" ).submit(function( event ) {
                 event.preventDefault();
                 $('#loader').show();
+                $('#sendbtn').hide();
                 dias = diasHospedaje();
                 numline = parent.$('#tablelines tbody').find('tr.selected').prop("id");
-        		console.log(numline);
+        		//console.log(numline);
                 if(dias===0){
                 	parent.$.colorbox.close();
                 }

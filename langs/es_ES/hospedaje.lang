@@ -48,6 +48,8 @@ HOSPEDAJE_MYPARAM1 = My param 1
 HOSPEDAJE_MYPARAM1Tooltip = My param 1 tooltip
 HOSPEDAJE_MYPARAM2=My param 2
 HOSPEDAJE_MYPARAM2Tooltip=My param 2 tooltip
+HOSPEDAJE_MYPARAM_HELP=Ocultar informacion.
+HOSPEDAJE_MYPARAM_HELPTooltip=Oculta el texto en las ventanas de seleccion, y menu informacion en POS.
 
 #
 # About page
@@ -57,9 +59,21 @@ HOSPEDAJEAbout = Acerca de nosotros
 HOSPEDAJEAboutPage = Pagina acerca de nos.
 
 #
-# Sample page
+# Zone
 #
-MyPageName = My page name
+Site=Lugar
+Sites=Lugar de acampe
+DefineZonePlan= Definir lugares
+DragDropZone= Zonas
+Deletezone=Eliminar
+Addzone=Agregar Lugar
+Editzone=Editar Lugar
+zone = Lugar | Zona
+avisowindowszone = No se olvide de seleccionar una categoria.
+avisoDropZone = No se selecciono ningun tipo de lugar.
+zonextt1=Lugar: Cualquier.
+zonextt2=Lugar: 
+zonetxtheaderhelp=Seleccionar primero el lugar en caso de escoger alguno, luego proceder a seleccionar la fecha y por ultimo seleccionar las personas o invitados.
 
 #
 # Sample widget

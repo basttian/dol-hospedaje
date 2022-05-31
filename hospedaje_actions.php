@@ -64,7 +64,7 @@ if (isset($user->socid) && $user->socid > 0) {
 }
 
 $max = 5;
-$now = dol_now();
+$now = dol_now('auto')*1000;
 
 global $mysoc;
 
@@ -117,35 +117,6 @@ if ( $action == "dayrow" && $placeid == 0 ){
     $invoice->fetch($placeid);
     
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

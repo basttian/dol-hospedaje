@@ -180,18 +180,21 @@ $arrayofjs  = array();
 ?>
 <div style="position:absolute; top:2%; left:5%; width:91%;">
 
-<?php print info_admin($langs->trans("avisopeople")); ?>
+<?php 
+if(!$conf->global->HOSPEDAJE_MYPARAM_HELP){
+    print info_admin($langs->trans("avisopeople")); 
+};
+?>
 
 <center>
 <?php
-	print '<input type="text" class="takepospay" id="txt_people_total" name="people_total" style="width: 50%;" placeholder="'.$langs->trans('Ctd_Persons').'">';
+	print '<input type="text" disabled class="takepospay" id="txt_people_total" name="people_total" style="width: 50%;" placeholder="'.$langs->trans('Ctd_Persons').'">';
 ?>
 </center>
 </div>
 
 <div style="position:absolute; top:33%; left:5%; height:52%; width:92%;">
 <?php
-print '<br />';
 print '<button type="button" class="calcbutton" onclick="AddReduction(7);">7</button>';
 print '<button type="button" class="calcbutton" onclick="AddReduction(8);">8</button>';
 print '<button type="button" class="calcbutton" onclick="AddReduction(9);">9</button>';

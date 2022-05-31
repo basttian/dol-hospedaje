@@ -14,25 +14,18 @@
 -- along with this program.  If not, see https://www.gnu.org/licenses/.
 
 
-CREATE TABLE llx_hospedaje_hospedaje(
+CREATE TABLE llx_hospedaje_zonas(
 	-- BEGIN MODULEBUILDER FIELDS
 	rowid integer AUTO_INCREMENT PRIMARY KEY NOT NULL, 
-	ref varchar(128) DEFAULT '(PROV)' NOT NULL, 
-	amount double DEFAULT NULL, 
-	qty real, 
-	fk_soc integer, 
-	description text, 
-	note_public text, 
-	note_private text, 
-	date_creation datetime NOT NULL, 
-	tms timestamp, 
+	label varchar(255), 
+	leftpos double(24,8), 
+	toppos double(24,8), 
+	zone integer, 
+	startdate varchar(255), 
+	enddate varchar(255), 
+	active integer NOT NULL, 
+	invoideid integer NOT NULL, 
 	fk_user_creat integer NOT NULL, 
-	fk_user_modif integer, 
-	last_main_doc varchar(255), 
-	import_key varchar(14), 
-	model_pdf varchar(255), 
-	status smallint NOT NULL, 
-	fecha_ingreso datetime NOT NULL, 
-	fecha_egreso datetime NOT NULL
+	tms timestamp DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

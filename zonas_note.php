@@ -17,9 +17,9 @@
  */
 
 /**
- *  \file       hospedaje_note.php
+ *  \file       zonas_note.php
  *  \ingroup    hospedaje
- *  \brief      Tab for notes on Hospedaje
+ *  \brief      Tab for notes on Zonas
  */
 
 //if (! defined('NOREQUIREDB'))              define('NOREQUIREDB', '1');				// Do not create database handler $db
@@ -74,8 +74,8 @@ if (!$res) {
 	die("Include of main fails");
 }
 
-dol_include_once('/hospedaje/class/hospedaje.class.php');
-dol_include_once('/hospedaje/lib/hospedaje_hospedaje.lib.php');
+dol_include_once('/hospedaje/class/zonas.class.php');
+dol_include_once('/hospedaje/lib/hospedaje_zonas.lib.php');
 
 // Load translation files required by the page
 $langs->loadLangs(array("hospedaje@hospedaje", "companies"));
@@ -88,36 +88,54 @@ $cancel     = GETPOST('cancel', 'aZ09');
 $backtopage = GETPOST('backtopage', 'alpha');
 
 // Initialize technical objects
-$object = new Hospedaje($db);
+$object = new Zonas($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction = $conf->hospedaje->dir_output.'/temp/massgeneration/'.$user->id;
-$hookmanager->initHooks(array('hospedajenote', 'globalcard')); // Note that conf->hooks_modules contains array
+$hookmanager->initHooks(array('zonasnote', 'globalcard')); // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extrafields->fetch_name_optionals_label($object->table_element);
 
 // Load object
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php'; // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 if ($id > 0 || !empty($ref)) {
-	$upload_dir = $conf->hospedaje->multidir_output[$object->entity]."/".$object->id;
+	$upload_dir = $conf->hospedaje->multidir_output[!empty($object->entity) ? $object->entity : $conf->entity]."/".$object->id;
 }
 
-$permissionnote = $user->rights->hospedaje->hospedaje->write; // Used by the include of actions_setnotes.inc.php
-$permissiontoadd = $user->rights->hospedaje->hospedaje->write; // Used by the include of actions_addupdatedelete.inc.php
+
+// There is several ways to check permission.
+// Set $enablepermissioncheck to 1 to enable a minimum low level of checks
+$enablepermissioncheck = 0;
+if ($enablepermissioncheck) {
+	$permissiontoread = $user->rights->hospedaje->zonas->read;
+	$permissiontoadd = $user->rights->hospedaje->zonas->write;
+	$permissionnote = $user->rights->hospedaje->zonas->write; // Used by the include of actions_setnotes.inc.php
+} else {
+	$permissiontoread = 1;
+	$permissiontoadd = 1;
+	$permissionnote = 1;
+}
 
 // Security check (enable the most restrictive one)
 //if ($user->socid > 0) accessforbidden();
 //if ($user->socid > 0) $socid = $user->socid;
 //$isdraft = (($object->status == $object::STATUS_DRAFT) ? 1 : 0);
 //restrictedArea($user, $object->element, $object->id, $object->table_element, '', 'fk_soc', 'rowid', $isdraft);
-//if (empty($conf->hospedaje->enabled)) accessforbidden();
-//if (!$permissiontoread) accessforbidden();
+if (empty($conf->hospedaje->enabled)) accessforbidden();
+if (!$permissiontoread) accessforbidden();
 
 
 /*
  * Actions
  */
 
-include DOL_DOCUMENT_ROOT.'/core/actions_setnotes.inc.php'; // Must be include, not include_once
+$parameters = array();
+$reshook = $hookmanager->executeHooks('doActions', $parameters, $object, $action); // Note that $action and $object may have been modified by some hooks
+if ($reshook < 0) {
+	setEventMessages($hookmanager->error, $hookmanager->errors, 'errors');
+}
+if (empty($reshook)) {
+	include DOL_DOCUMENT_ROOT.'/core/actions_setnotes.inc.php'; // Must be include, not include_once
+}
 
 
 /*
@@ -128,18 +146,18 @@ $form = new Form($db);
 
 //$help_url='EN:Customers_Orders|FR:Commandes_Clients|ES:Pedidos de clientes';
 $help_url = '';
-llxHeader('', $langs->trans('Hospedaje'), $help_url);
+llxHeader('', $langs->trans('Zonas'), $help_url);
 
 if ($id > 0 || !empty($ref)) {
 	$object->fetch_thirdparty();
 
-	$head = hospedajePrepareHead($object);
+	$head = zonasPrepareHead($object);
 
-	print dol_get_fiche_head($head, 'note', '', -1, $object->picto);
+	print dol_get_fiche_head($head, 'note', $langs->trans("Zonas"), -1, $object->picto);
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="'.dol_buildpath('/hospedaje/hospedaje_list.php', 1).'?restore_lastsearch_values=1'.(!empty($socid) ? '&socid='.$socid : '').'">'.$langs->trans("BackToList").'</a>';
+	$linkback = '<a href="'.dol_buildpath('/hospedaje/zonas_list.php', 1).'?restore_lastsearch_values=1'.(!empty($socid) ? '&socid='.$socid : '').'">'.$langs->trans("BackToList").'</a>';
 
 	$morehtmlref = '<div class="refidno">';
 	/*
@@ -156,7 +174,7 @@ if ($id > 0 || !empty($ref)) {
 	 if ($permissiontoadd)
 	 {
 	 if ($action != 'classify')
-	 //$morehtmlref.='<a class="editfielda" href="' . $_SERVER['PHP_SELF'] . '?action=classify&amp;id=' . $object->id . '">' . img_edit($langs->transnoentitiesnoconv('SetProject')) . '</a> : ';
+	 //$morehtmlref.='<a class="editfielda" href="' . $_SERVER['PHP_SELF'] . '?action=classify&token='.newToken().'&id=' . $object->id . '">' . img_edit($langs->transnoentitiesnoconv('SetProject')) . '</a> : ';
 	 $morehtmlref.=' : ';
 	 if ($action == 'classify') {
 	 //$morehtmlref.=$form->form_project($_SERVER['PHP_SELF'] . '?id=' . $object->id, $object->socid, $object->fk_project, 'projectid', 0, 0, 1, 1);

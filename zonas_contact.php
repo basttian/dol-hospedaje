@@ -1,6 +1,6 @@
 <?php
 /* Copyright (C) 2007-2017 Laurent Destailleur  <eldy@users.sourceforge.net>
- * Copyright (C) 2021 SuperAdmin
+ * Copyright (C) ---Put here your own copyright and developer email---
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@
  */
 
 /**
- *  \file       hospedaje/myobject_contact.php
+ *  \file       zonas_contact.php
  *  \ingroup    hospedaje
- *  \brief      Tab for contacts linked to MyObject
+ *  \brief      Tab for contacts linked to Zonas
  */
 
 // Load Dolibarr environment
@@ -55,8 +55,8 @@ if (!$res) {
 
 require_once DOL_DOCUMENT_ROOT.'/contact/class/contact.class.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formcompany.class.php';
-dol_include_once('/hospedaje/class/myobject.class.php');
-dol_include_once('/hospedaje/lib/hospedaje_myobject.lib.php');
+dol_include_once('/hospedaje/class/zonas.class.php');
+dol_include_once('/hospedaje/lib/hospedaje_zonas.lib.php');
 
 // Load translation files required by the page
 $langs->loadLangs(array("hospedaje@hospedaje", "companies", "other", "mails"));
@@ -68,25 +68,34 @@ $socid  = GETPOST('socid', 'int');
 $action = GETPOST('action', 'aZ09');
 
 // Initialize technical objects
-$object = new MyObject($db);
+$object = new Zonas($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction = $conf->hospedaje->dir_output.'/temp/massgeneration/'.$user->id;
-$hookmanager->initHooks(array('myobjectcontact', 'globalcard')); // Note that conf->hooks_modules contains array
+$hookmanager->initHooks(array('zonascontact', 'globalcard')); // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extrafields->fetch_name_optionals_label($object->table_element);
 
 // Load object
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php'; // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 
-$permission = $user->rights->hospedaje->myobject->write;
+// There is several ways to check permission.
+// Set $enablepermissioncheck to 1 to enable a minimum low level of checks
+$enablepermissioncheck = 0;
+if ($enablepermissioncheck) {
+	$permissiontoread = $user->rights->hospedaje->zonas->read;
+	$permission = $user->rights->hospedaje->zonas->write;
+} else {
+	$permissiontoread = 1;
+	$permission = 1;
+}
 
 // Security check (enable the most restrictive one)
 //if ($user->socid > 0) accessforbidden();
 //if ($user->socid > 0) $socid = $user->socid;
 //$isdraft = (($object->status == $object::STATUS_DRAFT) ? 1 : 0);
 //restrictedArea($user, $object->element, $object->id, $object->table_element, '', 'fk_soc', 'rowid', $isdraft);
-//if (empty($conf->hospedaje->enabled)) accessforbidden();
-//if (!$permissiontoread) accessforbidden();
+if (empty($conf->hospedaje->enabled)) accessforbidden();
+if (!$permissiontoread) accessforbidden();
 
 
 /*
@@ -129,7 +138,7 @@ if ($action == 'addcontact' && $permission) {
  * View
  */
 
-$title = $langs->trans('MyObject')." - ".$langs->trans('ContactsAddresses');
+$title = $langs->trans('Zonas')." - ".$langs->trans('ContactsAddresses');
 $help_url = '';
 //$help_url='EN:Module_Third_Parties|FR:Module_Tiers|ES:Empresas';
 llxHeader('', $title, $help_url);
@@ -150,11 +159,11 @@ if ($object->id) {
 	/*
 	 * Show tabs
 	 */
-	$head = myobjectPrepareHead($object);
+	$head = zonasPrepareHead($object);
 
-	print dol_get_fiche_head($head, 'contact', '', -1, $object->picto);
+	print dol_get_fiche_head($head, 'contact', $langs->trans("Zonas"), -1, $object->picto);
 
-	$linkback = '<a href="'.dol_buildpath('/hospedaje/myobject_list.php', 1).'?restore_lastsearch_values=1'.(!empty($socid) ? '&socid='.$socid : '').'">'.$langs->trans("BackToList").'</a>';
+	$linkback = '<a href="'.dol_buildpath('/hospedaje/zonas_list.php', 1).'?restore_lastsearch_values=1'.(!empty($socid) ? '&socid='.$socid : '').'">'.$langs->trans("BackToList").'</a>';
 
 	$morehtmlref = '<div class="refidno">';
 	/*
@@ -171,7 +180,7 @@ if ($object->id) {
 	 if ($permissiontoadd)
 	 {
 	 if ($action != 'classify')
-	 //$morehtmlref.='<a class="editfielda" href="' . $_SERVER['PHP_SELF'] . '?action=classify&amp;id=' . $object->id . '">' . img_edit($langs->transnoentitiesnoconv('SetProject')) . '</a> : ';
+	 //$morehtmlref.='<a class="editfielda" href="' . $_SERVER['PHP_SELF'] . '?action=classify&token='.newToken().'&id=' . $object->id . '">' . img_edit($langs->transnoentitiesnoconv('SetProject')) . '</a> : ';
 	 $morehtmlref.=' : ';
 	 if ($action == 'classify') {
 	 //$morehtmlref.=$form->form_project($_SERVER['PHP_SELF'] . '?id=' . $object->id, $object->socid, $object->fk_project, 'projectid', 0, 0, 1, 1);

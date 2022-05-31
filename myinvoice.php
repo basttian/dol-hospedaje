@@ -158,5 +158,3 @@ if ( $action == "dayrow" && $placeid == 0 ){
 
 
 
-
-

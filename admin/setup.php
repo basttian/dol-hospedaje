@@ -75,8 +75,9 @@ $scandir = GETPOST('scan_dir', 'alpha');
 $type = 'myobject';
 
 $arrayofparameters = array(
-	'HOSPEDAJE_MYPARAM1'=>array('type'=>'string', 'css'=>'minwidth500' ,'enabled'=>1),
-	'HOSPEDAJE_MYPARAM2'=>array('type'=>'textarea','enabled'=>1),
+    'HOSPEDAJE_MYPARAM_HELP'=>array('type'=>'yesno', 'enabled'=>1),
+	//'HOSPEDAJE_MYPARAM1'=>array('type'=>'string', 'css'=>'minwidth500' ,'enabled'=>1),
+	//'HOSPEDAJE_MYPARAM2'=>array('type'=>'textarea','enabled'=>1),
 	//'HOSPEDAJE_MYPARAM3'=>array('type'=>'category:'.Categorie::TYPE_CUSTOMER, 'enabled'=>1),
 	//'HOSPEDAJE_MYPARAM4'=>array('type'=>'emailtemplate:thirdparty', 'enabled'=>1),
 	//'HOSPEDAJE_MYPARAM5'=>array('type'=>'yesno', 'enabled'=>1),
@@ -208,7 +209,9 @@ $form = new Form($db);
 $help_url = '';
 $page_name = "HOSPEDAJESetup";
 
-llxHeader('', $langs->trans($page_name), $help_url);
+$arrayofcss = array("/custom/hospedaje/css/colorbox.css");
+
+llxHeader('', $langs->trans($page_name), $help_url, '', 0, 0, $arrayofjs, $arrayofcss);
 
 // Subheader
 $linkback = '<a href="'.($backtopage ? $backtopage : DOL_URL_ROOT.'/admin/modules.php?restore_lastsearch_values=1').'">'.$langs->trans("BackToModuleList").'</a>';
@@ -221,13 +224,35 @@ print dol_get_fiche_head($head, 'settings', $langs->trans($page_name), -1, "hosp
 
 // Setup page goes here
 echo '<span class="opacitymedium">'.$langs->trans("HOSPEDAJESetupPage").'</span><br><br>';
-/*
+
+// Mode
+print '<form action="'.$_SERVER["PHP_SELF"].'" method="post">';
+print '<input type="hidden" name="token" value="'.newToken().'">';
+print '<input type="hidden" name="action" value="set">';
+    ?>
+    <script type="text/javascript" src="<?php echo DOL_URL_ROOT ?>/custom/hospedaje/js/jquery.colorbox-min.js"></script>	<!-- TODO It seems we don't need this -->
+    <script type="text/javascript">
+    function Zones() {
+    	console.log("Open box to select floor");
+    	$.colorbox({href:"<?php echo DOL_URL_ROOT ?>/custom/hospedaje/hospedaje_selected_site.php?mode=edit&place=0", width:"90%", height:"90%", transition:"elastic", iframe:"true", title:"<?php echo $langs->trans("zone"); ?>"});
+    }
+    </script>
+    <?php
+    print '<br>';
+    print '<a href="" onclick="Zones(); return false;"><span class="fa fa-map"></span> '.$langs->trans("DefineZonePlan").'</a><br>';
+    print '<br><br>';
+
+    
+print '</form>';
+    
+    
+    
+//////////////////////////////////////////////////
 
 if ($action == 'edit') {
 	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
 	print '<input type="hidden" name="token" value="'.newToken().'">';
 	print '<input type="hidden" name="action" value="update">';
-
 	print '<table class="noborder centpercent">';
 	print '<tr class="liste_titre"><td class="titlefield">'.$langs->trans("Parameter").'</td><td>'.$langs->trans("Value").'</td></tr>';
 
@@ -513,8 +538,6 @@ foreach ($myTmpObjects as $myTmpObjectKey => $myTmpObjectArray) {
 		}
 		print "</table><br>\n";
 	}
-
-	
 	
 	if ($myTmpObjectArray['includedocgeneration']) {
 		
@@ -658,7 +681,7 @@ foreach ($myTmpObjects as $myTmpObjectKey => $myTmpObjectArray) {
 
 		print '</table>';
 	}
-}*/
+}
 
 
 

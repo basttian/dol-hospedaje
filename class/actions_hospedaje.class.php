@@ -15,6 +15,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+//require_once DOL_DOCUMENT_ROOT.'/compta/facture/class/facture.class.php';
+
 /**
  * \file    hospedaje/class/actions_hospedaje.class.php
  * \ingroup hospedaje
@@ -28,7 +30,7 @@
  */
 class ActionsHOSPEDAJE
 {
-	/**
+	/** 
 	 * @var DoliDB Database handler.
 	 */
 	public $db;
@@ -54,6 +56,12 @@ class ActionsHOSPEDAJE
 	 */
 	public $resprints;
 
+	
+	/**
+	 * Facture id
+	 * @var int
+	 */
+	public $id;
 
 	/**
 	 * Constructor
@@ -63,6 +71,19 @@ class ActionsHOSPEDAJE
 	public function __construct($db)
 	{
 		$this->db = $db;
+		
+		$invoiceid = (GETPOST('invoiceid', 'int') ? GETPOST('invoiceid', 'int') : 0);
+		$place = (GETPOST('place', 'aZ09') ? GETPOST('place', 'aZ09') : 0);
+		$invoice = new Facture($db);
+		if ($invoiceid > 0) {
+		    $ret = $invoice->fetch($invoiceid);
+		} else {
+		    $ret = $invoice->fetch('', '(PROV-POS'.$_SESSION["takeposterminal"].'-'.$place.')');
+		}
+		if ($ret > 0) {
+		    $placeid = $invoice->id;
+		}
+		$this->id = $placeid;
 	}
 
 
@@ -97,17 +118,17 @@ class ActionsHOSPEDAJE
 		global $conf, $user, $langs, $db;
 
 		$error = 0; // Error counter
-
+		//print_r($parameters);
 		/*print_r($parameters); print_r($object); echo "action: " . $action; */
 		if (in_array($parameters['currentcontext'], array('somecontext1'))) {	    // do something only for the context 'somecontext1' or 'somecontext2'
 			// Do what you want here...
 			// You can for example call global vars like $fieldstosearchall to overwrite them, or update database depending on $action and $_POST values.		       
-	    }	
+		}
 
 		if (!$error) {
-			$this->results = array('myreturn' => 999);
+		    $this->results = array('re' => 999 );
 			$this->resprints = 'A text to show';
-			return 0; // or return 1 to replace standard code
+			return 1; // or return 1 to replace standard code
 		} else {
 			$this->errors[] = 'Error message';
 			return -1;
@@ -359,35 +380,125 @@ class ActionsHOSPEDAJE
 	/* Add here any other hooked methods... */
 	public function ActionButtons($parameters, &$object, &$action, $hookmanager)
 	{
-	    global $conf, $user, $langs;
+	    global $conf, $user, $langs, $db;
 	    
 	    // Security check
 	    if ($user->rights->hospedaje->hospedaje->posbutton) {
 	    
 	    //print_r($parameters);
 	    $error = 0; // Error counter
-	    
+
 	    /* print_r($parameters); print_r($object); echo "action: " . $action; */
 	    if (in_array($parameters['currentcontext'], array('takeposfrontend'))) {	    // do something only for the context 'somecontext1' or 'somecontext2'
 	        // Do what you want here...
 	        // You can for example call global vars like $fieldstosearchall to overwrite them, or update database depending on $action and $_POST values.
-	        
-	        
+	        $idinvoice = (GETPOST('invoiceid', 'int')? GETPOST('invoiceid', 'int') : 0);
+	        $factureid = !empty($this->id)? $this->id : -1;
+
 	        $langs->loadLangs(array("hospedaje@hospedaje"));
+
+	        $htmlcode = '<header class="navbar" style="margin:0 1em 0 1em;">';
+	        $htmlcode.= '<section class="navbar-section"></section>';
+	        $htmlcode.= '<section class="navbar-center"><i class="fa fa-location-arrow" aria-hidden="true"></i>';
+	 		$htmlcode.='<span id="placesel">&nbsp;0</span>&nbsp;|&nbsp;<i class="fa fa-map-marker" aria-hidden="true"></i>';
+	 		$htmlcode.='<span id="zonesel">&nbsp;0</span></section><section class="navbar-section">';
+	 		if(!$conf->global->HOSPEDAJE_MYPARAM_HELP){
+    	 		$htmlcode.='<div class="popover popover-left ">';
+    	 		$htmlcode.='<span style="cursor: pointer;">';
+    	 		$htmlcode.='<i class="fa fa-info-circle" aria-hidden="true"></i>';
+    	 		$htmlcode.='</span>';
+    	 		$htmlcode.='<div class="popover-container">';
+    	 		$htmlcode.='<div class="card">';
+    	 		$htmlcode.='<div class="card-header">';
+    	 		$htmlcode.='';
+    	 		$htmlcode.='</div>';
+    	 		$htmlcode.='<div class="card-body">';
+    	 		$htmlcode.=$langs->trans("zonetxtheaderhelp");
+    	 		$htmlcode.='</div>';
+    	 		$htmlcode.='<div class="card-footer">';
+    	 		$htmlcode.='';
+    	 		$htmlcode.='</div>';
+    	 		$htmlcode.='</div>';
+    	 		$htmlcode.='</div>';
+    	 		$htmlcode.='</div>';
+	 		};
+	 		$htmlcode.='</section></header>';
+	        
+	        ?>
+	        <style>
+	        .navbar{align-items:stretch;display:-ms-flexbox;display:flex;-ms-flex-align:stretch;-ms-flex-pack:justify;-ms-flex-wrap:wrap; flex-wrap:wrap;justify-content:space-between;}.navbar .navbar-section{align-items:center;display:-ms-flexbox;display:flex;-ms-flex:1 0 0;flex:1 0 0;-ms-flex-align:center;}.navbar .navbar-section:not(:first-child):last-child{-ms-flex-pack:end;justify-content:flex-end;}.navbar .navbar-center{ align-items:center;display:-ms-flexbox; display:flex;-ms-flex:0 0 auto;flex:0 0 auto;ms-flex-align:center;padding:5px;}.navbar .navbar-brand{font-size:.9rem;text-decoration:none;}
+	        .popover{display:inline-block;position:relative}.popover .popover-container{left:50%;opacity:0;padding:.4rem;position:absolute;top:0;transform:translate(-50%,-50%) scale(0);transition:transform .2s;width:320px;z-index:300}.popover :focus+.popover-container,.popover:hover .popover-container{display:block;opacity:1;transform:translate(-50%,-100%) scale(1)}.popover.popover-right .popover-container{left:100%;top:50%}.popover.popover-right :focus+.popover-container,.popover.popover-right:hover .popover-container{transform:translate(0,-50%) scale(1)}.popover.popover-bottom .popover-container{left:50%;top:100%}.popover.popover-bottom :focus+.popover-container,.popover.popover-bottom:hover .popover-container{transform:translate(-50%,0) scale(1)}.popover.popover-left .popover-container{left:0;top:50%}.popover.popover-left :focus+.popover-container,.popover.popover-left:hover .popover-container{transform:translate(-100%,-50%) scale(1)}.popover .card{border:0;box-shadow:0 .2rem .5rem rgba(48,55,66,.3)}
+	        .card{background:#fff;border:.05rem solid #dadee4;border-radius:.1rem;display:-ms-flexbox;display:flex;-ms-flex-direction:column;flex-direction:column}.card .card-body,.card .card-footer,.card .card-header{padding:.8rem;padding-bottom:0}.card .card-body:last-child,.card .card-footer:last-child,.card .card-header:last-child{padding-bottom:.8rem}.card .card-body{-ms-flex:1 1 auto;flex:1 1 auto}.card .card-image{padding-top:.8rem}.card .card-image:first-child{padding-top:0}.card .card-image:first-child img{border-top-left-radius:.1rem;border-top-right-radius:.1rem}.card .card-image:last-child img{border-bottom-left-radius:.1rem;border-bottom-right-radius:.1rem}
+	        </style>
+	        
+			<script type="text/javascript">
+
+            jQuery(document).ready(function() {
+            	$.getJSON("<?php echo DOL_URL_ROOT.'/custom/hospedaje/hospedaje_selected_site.php'; ?>",
+	 		 			{action: "getzone", invoideid: <?php echo $factureid; ?> , token:'<?php echo currentToken(); ?>'}, function( data ) {
+		 		 			console.log(data);
+            				$( "#placesel" ).html("<b>&nbsp;"+data.label+"</b>");
+            				$( "#zonesel" ).html("<b>&nbsp;"+data.zone+"</b>");
+		 			});
+
+            	
+	 				$('<?php echo $htmlcode;?>').insertBefore(parent.$("#poslines")).find(parent.$("#tablelines"));
+				
+	 			parent.$("#poslines").on("click",function(event){
+	 				event.preventDefault();
+	 				id = document.getElementById('invoiceid');
+	 				if(id !== null){
+	 				$.getJSON("<?php echo DOL_URL_ROOT.'/custom/hospedaje/hospedaje_selected_site.php'; ?>",
+	 		 			{action: "getzone", invoideid: id.value , token:'<?php echo currentToken(); ?>'}, function( data ) {
+		 		 			console.log(data);
+            				$( "#placesel" ).html("<b>&nbsp;"+data.label+"</b>");
+            				$( "#zonesel" ).html("<b>&nbsp;"+data.zone+"</b>");
+		 			});
+	 				}
+	 			});
+			});
+			/**/
+            jQuery(document).ready(function() {
+            	parent.$("#delete").on("click",function(event){
+            		id = document.getElementById('invoiceid');
+	 				event.preventDefault();
+	 				$.getJSON("<?php echo DOL_URL_ROOT.'/custom/hospedaje/hospedaje_selected_site.php'; ?>",
+		 		 			{action: "getzone", invoideid: id.value , token:'<?php echo currentToken(); ?>'}, function( data ) {
+			 		 			console.log(data);
+			 		 			parent.$("#poslines").load("<?php echo DOL_URL_ROOT; ?>/takepos/invoice.php", function() {
+			 		 				parent.$(this).find("tr:eq(1)").click().addClass("selected");
+			 		 			});
+	            				$( "#placesel" ).html("<b>&nbsp;"+data.label+"</b>");
+	            				$( "#zonesel" ).html("<b>&nbsp;"+data.zone+"</b>");
+			 			});
+	 			});
+            });   
+		    
+    		</script>
+    		<?php
             
-            $menu = array(
-	            ['title'=>'<span class="fa fa-user paddingrightonly"></span><div class="trunc">'.$langs->trans("Persons").'</div>', 'action'=>'$.colorbox({href:\'../custom/hospedaje/hospedaje_selected_people.php?place=\'+place, width:\'70%\', height:\'80%\', transition:\'none\', iframe:\'false\', title:\''.$langs->trans("Persons").'\'});']
+            $menu = [
+                ['title'=>'<span class="fa fa-map-marker paddingrightonly"></span><div class="trunc">'.$langs->trans("Site").'</div>', 'action'=>'$.colorbox({href:\'../custom/hospedaje/hospedaje_selected_site.php?place=\'+place, width:\'80%\', height:\'80%\', transition:\'elastic\', iframe:\'false\', title:\''.$langs->trans("Sites").'\'});']
+                ,
+                ['title'=>'<span class="fa fa-user paddingrightonly"></span><div class="trunc">'.$langs->trans("Persons").'</div>', 'action'=>'$.colorbox({href:\'../custom/hospedaje/hospedaje_selected_people.php?place=\'+place, width:\'80%\', height:\'80%\', transition:\'elastic\', iframe:\'false\', title:\''.$langs->trans("Persons").'\'});']
 	            ,
-	            ['title'=>'<span class="fa fa-users paddingrightonly"></span><div class="trunc">'.$langs->trans("Guest").'</div>', 'action'=>'$.colorbox({href:\'../custom/hospedaje/hospedaje_selected_guest.php?place=\'+place, width:\'70%\', height:\'80%\', transition:\'none\', iframe:\'false\', title:\''.$langs->trans("Guest").'\'});']
+                ['title'=>'<span class="fa fa-users paddingrightonly"></span><div class="trunc">'.$langs->trans("Guest").'</div>', 'action'=>'$.colorbox({href:\'../custom/hospedaje/hospedaje_selected_guest.php?place=\'+place, width:\'80%\', height:\'80%\', transition:\'elastic\', iframe:\'false\', title:\''.$langs->trans("Guest").'\'});']
 	            ,
-	            ['title'=>'<span class="fa fa-clock paddingrightonly"></span><div class="trunc">'.$langs->trans("Days").'</div>', 'action'=>'$.colorbox({href:\'../custom/hospedaje/hospedaje_selected_date.php?place=\'+place, width:\'85%\', height:\'75%\', transition:\'none\', iframe:\'false\', title:\''.$langs->trans("Days").'\'});']
-            ); 
+                ['title'=>'<span class="fa fa-clock paddingrightonly"></span><div class="trunc">'.$langs->trans("Days").'</div>', 'action'=>'$.colorbox({href:\'../custom/hospedaje/hospedaje_selected_date.php?place=\'+place, width:\'80%\', height:\'80%\', transition:\'elastic\', iframe:\'true\', title:\''.$langs->trans("Days").'\'});']
+            ]; 
             //return $menu; //version 14 descomentar esta linea
 
 	    }
 	   
 	    if (!$error) {
-            $this->results = array($menu);
+	       
+	        $btn_place = $menu[0];
+	        $btn_guest = $menu[1];
+	        $btn_persons = $menu[2];
+	        $btn_days = $menu[3];
+	        
+	        $this->results = array([$btn_place,$btn_days,$btn_persons,$btn_guest]);
+            
 	        //$this->resprints = 'A text to show';
 	        return 0; // or return 1 to replace standard code
 	    } else {

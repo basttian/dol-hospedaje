@@ -185,14 +185,19 @@ $arrayofjs  = array();
 ?>
 <div style="position:absolute; top:2%; left:5%; width:91%;">
 
-<?php print info_admin($langs->trans("avisoguest")); ?>
+
+<?php 
+if(!$conf->global->HOSPEDAJE_MYPARAM_HELP){
+    print info_admin($langs->trans("avisoguest")); 
+};
+?>
 
 <center>
 <?php
 
-	print '<input type="text" class="takepospay" id="txt_people_total" name="people_total" style="width: 50%;" placeholder="'.$langs->trans('Ctd_guest').'">';
+	print '<input disabled type="text" class="takepospay" id="txt_people_total" name="people_total" style="width: 50%;" placeholder="'.$langs->trans('Ctd_guest').'">';
 	print '<br />';
-	print '<input type="text" class="takepospay" id="txt_people_discount" name="people_discount" style="width: 50%;" placeholder="'.$langs->trans('Dto_guest').'">';
+	print '<input disabled type="text" class="takepospay" id="txt_people_discount" name="people_discount" style="width: 50%;" placeholder="'.$langs->trans('Dto_guest').'">';
 
 ?>
 </center>
@@ -214,8 +219,8 @@ print '<button type="button" class="calcbutton" onclick="AddReduction(2);">2</bu
 print '<button type="button" class="calcbutton" onclick="AddReduction(3);">3</button>';
 print '<button type="button" class="calcbutton3 poscolorblue" onclick="Reset();"><span id="printtext" style="font-weight: bold; font-size: 18pt;">C</span></button>';
 print '<button type="button" class="calcbutton" onclick="AddReduction(0);">0</button>';
-print '<button type="button" class="calcbutton"></button>';
-print '<button type="button" class="calcbutton">&nbsp;</button>';
+print '<button type="button" class="calcbutton" id="focusCant"><i class="fa fa-arrow-circle-up" aria-hidden="true"></i></button>';
+print '<button type="button" class="calcbutton" id="focusDesc">&nbsp;<i class="fa fa-arrow-circle-down" aria-hidden="true"></i></button>';
 print '<button type="button" class="calcbutton3 poscolordelete" onclick="parent.$.colorbox.close();"><span id="printtext" style="font-weight: bold; font-size: 18pt;">X</span></button>';
 
 ?>
@@ -224,17 +229,18 @@ print '<button type="button" class="calcbutton3 poscolordelete" onclick="parent.
 <script type="text/javascript" language="javascript">
 
 $( document ).ready(function() {	
+	
+	$( "#txt_people_total" ).select();
+	$('#focusCant').html('<i class="fa fa-i-cursor" aria-hidden="true"></i>');
+	
+	$("#txt_people_total").focus(function(){
+		inFocus = true;
+	});
 
-$( "#txt_people_total" ).select();
-
-$("#txt_people_total").focus(function(){
-	inFocus = true;
-});
-
-$("#txt_people_discount").focus(function(){
-	inFocus = false;
-});
-
+	$("#txt_people_discount").focus(function(){
+		inFocus = false;
+	});
+	
 });
 
 var inFocus = true;	
@@ -246,10 +252,17 @@ var numline = 0;
     	{
     		peopleTotal = '';
     		jQuery('#txt_people_total').val(peopleTotal);
-
+    	
     		peopleDiscount = '';
     		jQuery('#txt_people_discount').val(peopleDiscount);
 
+    		if(inFocus){
+				$('#focusCant').html('<i class="fa fa-i-cursor" aria-hidden="true"></i>');
+				$('#focusDesc').html('<i class="fa fa-arrow-circle-down" aria-hidden="true"></i>');
+        	}else{
+        		$('#focusDesc').html('<i class="fa fa-i-cursor" aria-hidden="true"></i>');
+				$('#focusCant').html('<i class="fa fa-arrow-circle-up" aria-hidden="true"></i>');
+            }
     	}
 		function AddReduction(peopleNumber)
     	{
@@ -284,7 +297,24 @@ var numline = 0;
     		//parent.$.colorbox.close();
 		}
 
+		$('#focusCant').on('click',function(ev){
+			inFocus = true;
+			$(this).html('<i class="fa fa-i-cursor" aria-hidden="true"></i>');
+			$('#focusDesc').html('<i class="fa fa-arrow-circle-down" aria-hidden="true"></i>');
+			$("#txt_people_total").focus(function(){
+				inFocus = false;
+			});
+		});
+			
 
+		$('#focusDesc').on('click',function(ev){
+			inFocus = false;
+			$(this).html('<i class="fa fa-i-cursor" aria-hidden="true"></i>');
+			$('#focusCant').html('<i class="fa fa-arrow-circle-up" aria-hidden="true"></i>');
+			$("#txt_people_discount").focus(function(){
+				inFocus = true;
+			});
+		});
 		
 </script>
 <?php 

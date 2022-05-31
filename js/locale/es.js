@@ -1,6 +1,6 @@
 //! moment.js locale configuration
 //! locale : Spanish [es]
-//! author : Julio Napurí : https://github.com/julionc
+//! author : Julio Napurï¿½ : https://github.com/julionc
 
 ;(function (global, factory) {
    typeof exports === 'object' && typeof module !== 'undefined'
@@ -23,9 +23,9 @@ var es = moment.defineLocale('es', {
         }
     },
     monthsParseExact : true,
-    weekdays : 'domingo_lunes_martes_miércoles_jueves_viernes_sábado'.split('_'),
-    weekdaysShort : 'dom._lun._mar._mié._jue._vie._sáb.'.split('_'),
-    weekdaysMin : 'do_lu_ma_mi_ju_vi_sá'.split('_'),
+    weekdays : 'domingo_lunes_martes_miercoles_jueves_viernes_sabado'.split('_'),
+    weekdaysShort : 'dom._lun._mar._mie._jue._vie._sï¿½b.'.split('_'),
+    weekdaysMin : 'do_lu_ma_mi_ju_vi_sa'.split('_'),
     weekdaysParseExact : true,
     longDateFormat : {
         LT : 'H:mm',
@@ -40,7 +40,7 @@ var es = moment.defineLocale('es', {
             return '[hoy a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
         },
         nextDay : function () {
-            return '[mañana a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
+            return '[maÃ±ana a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
         },
         nextWeek : function () {
             return 'dddd [a la' + ((this.hours() !== 1) ? 's' : '') + '] LT';
@@ -61,15 +61,15 @@ var es = moment.defineLocale('es', {
         mm : '%d minutos',
         h : 'una hora',
         hh : '%d horas',
-        d : 'un día',
-        dd : '%d días',
+        d : 'un dï¿½a',
+        dd : '%d dï¿½as',
         M : 'un mes',
         MM : '%d meses',
-        y : 'un año',
-        yy : '%d años'
+        y : 'un aï¿½o',
+        yy : '%d aï¿½os'
     },
-    ordinalParse : /\d{1,2}º/,
-    ordinal : '%dº',
+    ordinalParse : /\d{1,2}ï¿½/,
+    ordinal : '%dï¿½',
     week : {
         dow : 1, // Monday is the first day of the week.
         doy : 4  // The week that contains Jan 4th is the first week of the year.

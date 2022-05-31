@@ -17,9 +17,9 @@
  */
 
 /**
- *  \file       hospedaje_document.php
+ *  \file       zonas_document.php
  *  \ingroup    hospedaje
- *  \brief      Tab for documents linked to Hospedaje
+ *  \brief      Tab for documents linked to Zonas
  */
 
 //if (! defined('NOREQUIREDB'))              define('NOREQUIREDB', '1');				// Do not create database handler $db
@@ -78,8 +78,8 @@ require_once DOL_DOCUMENT_ROOT.'/core/lib/company.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/files.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/lib/images.lib.php';
 require_once DOL_DOCUMENT_ROOT.'/core/class/html.formfile.class.php';
-dol_include_once('/hospedaje/class/hospedaje.class.php');
-dol_include_once('/hospedaje/lib/hospedaje_hospedaje.lib.php');
+dol_include_once('/hospedaje/class/zonas.class.php');
+dol_include_once('/hospedaje/lib/hospedaje_zonas.lib.php');
 
 // Load translation files required by the page
 $langs->loadLangs(array("hospedaje@hospedaje", "companies", "other", "mails"));
@@ -92,13 +92,13 @@ $ref = GETPOST('ref', 'alpha');
 
 // Get parameters
 $limit = GETPOST('limit', 'int') ? GETPOST('limit', 'int') : $conf->liste_limit;
-$sortfield = GETPOST("sortfield", 'alpha');
-$sortorder = GETPOST("sortorder", 'alpha');
+$sortfield = GETPOST('sortfield', 'aZ09comma');
+$sortorder = GETPOST('sortorder', 'aZ09comma');
 $page = GETPOSTISSET('pageplusone') ? (GETPOST('pageplusone') - 1) : GETPOST("page", 'int');
 if (empty($page) || $page == -1) {
 	$page = 0;
 }     // If $page is not defined, or '' or -1
-$offset = $liste_limit * $page;
+$offset = $limit * $page;
 $pageprev = $page - 1;
 $pagenext = $page + 1;
 if (!$sortorder) {
@@ -110,10 +110,10 @@ if (!$sortfield) {
 //if (! $sortfield) $sortfield="position_name";
 
 // Initialize technical objects
-$object = new Hospedaje($db);
+$object = new Zonas($db);
 $extrafields = new ExtraFields($db);
 $diroutputmassaction = $conf->hospedaje->dir_output.'/temp/massgeneration/'.$user->id;
-$hookmanager->initHooks(array('hospedajedocument', 'globalcard')); // Note that conf->hooks_modules contains array
+$hookmanager->initHooks(array('zonasdocument', 'globalcard')); // Note that conf->hooks_modules contains array
 // Fetch optionals attributes and labels
 $extrafields->fetch_name_optionals_label($object->table_element);
 
@@ -121,18 +121,27 @@ $extrafields->fetch_name_optionals_label($object->table_element);
 include DOL_DOCUMENT_ROOT.'/core/actions_fetchobject.inc.php'; // Must be include, not include_once  // Must be include, not include_once. Include fetch and fetch_thirdparty but not fetch_optionals
 
 if ($id > 0 || !empty($ref)) {
-	$upload_dir = $conf->hospedaje->multidir_output[$object->entity ? $object->entity : $conf->entity]."/hospedaje/".get_exdir(0, 0, 0, 1, $object);
+	$upload_dir = $conf->hospedaje->multidir_output[$object->entity ? $object->entity : $conf->entity]."/zonas/".get_exdir(0, 0, 0, 1, $object);
 }
 
-$permissiontoadd = $user->rights->hospedaje->hospedaje->write; // Used by the include of actions_addupdatedelete.inc.php and actions_linkedfiles.inc.php
+// There is several ways to check permission.
+// Set $enablepermissioncheck to 1 to enable a minimum low level of checks
+$enablepermissioncheck = 0;
+if ($enablepermissioncheck) {
+	$permissiontoread = $user->rights->hospedaje->zonas->read;
+	$permissiontoadd = $user->rights->hospedaje->zonas->write; // Used by the include of actions_addupdatedelete.inc.php and actions_linkedfiles.inc.php
+} else {
+	$permissiontoread = 1;
+	$permissiontoadd = 1;
+}
 
 // Security check (enable the most restrictive one)
 //if ($user->socid > 0) accessforbidden();
 //if ($user->socid > 0) $socid = $user->socid;
 //$isdraft = (($object->status == $object::STATUS_DRAFT) ? 1 : 0);
 //restrictedArea($user, $object->element, $object->id, $object->table_element, '', 'fk_soc', 'rowid', $isdraft);
-//if (empty($conf->hospedaje->enabled)) accessforbidden();
-//if (!$permissiontoread) accessforbidden();
+if (empty($conf->hospedaje->enabled)) accessforbidden();
+if (!$permissiontoread) accessforbidden();
 
 
 /*
@@ -148,7 +157,7 @@ include DOL_DOCUMENT_ROOT.'/core/actions_linkedfiles.inc.php';
 
 $form = new Form($db);
 
-$title = $langs->trans("Hospedaje").' - '.$langs->trans("Files");
+$title = $langs->trans("Zonas").' - '.$langs->trans("Files");
 $help_url = '';
 //$help_url='EN:Module_Third_Parties|FR:Module_Tiers|ES:Empresas';
 llxHeader('', $title, $help_url);
@@ -157,9 +166,9 @@ if ($object->id) {
 	/*
 	 * Show tabs
 	 */
-	$head = hospedajePrepareHead($object);
+	$head = zonasPrepareHead($object);
 
-	print dol_get_fiche_head($head, 'document', '', -1, $object->picto);
+	print dol_get_fiche_head($head, 'document', $langs->trans("Zonas"), -1, $object->picto);
 
 
 	// Build file list
@@ -171,7 +180,7 @@ if ($object->id) {
 
 	// Object card
 	// ------------------------------------------------------------
-	$linkback = '<a href="'.dol_buildpath('/hospedaje/hospedaje_list.php', 1).'?restore_lastsearch_values=1'.(!empty($socid) ? '&socid='.$socid : '').'">'.$langs->trans("BackToList").'</a>';
+	$linkback = '<a href="'.dol_buildpath('/hospedaje/zonas_list.php', 1).'?restore_lastsearch_values=1'.(!empty($socid) ? '&socid='.$socid : '').'">'.$langs->trans("BackToList").'</a>';
 
 	$morehtmlref = '<div class="refidno">';
 	/*
@@ -188,7 +197,7 @@ if ($object->id) {
 	 if ($permissiontoadd)
 	 {
 	 if ($action != 'classify')
-	 //$morehtmlref.='<a class="editfielda" href="' . $_SERVER['PHP_SELF'] . '?action=classify&amp;id=' . $object->id . '">' . img_edit($langs->transnoentitiesnoconv('SetProject')) . '</a> : ';
+	 //$morehtmlref.='<a class="editfielda" href="' . $_SERVER['PHP_SELF'] . '?action=classify&token='.newToken().'&id=' . $object->id . '">' . img_edit($langs->transnoentitiesnoconv('SetProject')) . '</a> : ';
 	 $morehtmlref.=' : ';
 	 if ($action == 'classify') {
 	 //$morehtmlref.=$form->form_project($_SERVER['PHP_SELF'] . '?id=' . $object->id, $object->socid, $object->fk_project, 'projectid', 0, 0, 1, 1);
@@ -233,14 +242,14 @@ if ($object->id) {
 	print dol_get_fiche_end();
 
 	$modulepart = 'hospedaje';
-	//$permissiontoadd = $user->rights->hospedaje->hospedaje->write;
+	//$permissiontoadd = $user->rights->hospedaje->zonas->write;
 	$permissiontoadd = 1;
-	//$permtoedit = $user->rights->hospedaje->hospedaje->write;
+	//$permtoedit = $user->rights->hospedaje->zonas->write;
 	$permtoedit = 1;
 	$param = '&id='.$object->id;
 
-	//$relativepathwithnofile='hospedaje/' . dol_sanitizeFileName($object->id).'/';
-	$relativepathwithnofile = 'hospedaje/'.dol_sanitizeFileName($object->ref).'/';
+	//$relativepathwithnofile='zonas/' . dol_sanitizeFileName($object->id).'/';
+	$relativepathwithnofile = 'zonas/'.dol_sanitizeFileName($object->ref).'/';
 
 	include DOL_DOCUMENT_ROOT.'/core/tpl/document_actions_post_headers.tpl.php';
 } else {

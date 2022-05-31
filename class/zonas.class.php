@@ -17,20 +17,20 @@
  */
 
 /**
- * \file        class/hospedaje.class.php
+ * \file        class/zonas.class.php
  * \ingroup     hospedaje
- * \brief       This file is a CRUD class file for Hospedaje (Create/Read/Update/Delete)
+ * \brief       This file is a CRUD class file for Zonas (Create/Read/Update/Delete)
  */
 
 // Put here all includes required by your class file
 require_once DOL_DOCUMENT_ROOT.'/core/class/commonobject.class.php';
-require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
-require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
-require_once DOL_DOCUMENT_ROOT . '/categories/class/categorie.class.php';
+//require_once DOL_DOCUMENT_ROOT . '/societe/class/societe.class.php';
+//require_once DOL_DOCUMENT_ROOT . '/product/class/product.class.php';
+
 /**
- * Class for Hospedaje
+ * Class for Zonas
  */
-class Hospedaje extends CommonObject
+class Zonas extends CommonObject
 {
 	/**
 	 * @var string ID of module.
@@ -40,12 +40,12 @@ class Hospedaje extends CommonObject
 	/**
 	 * @var string ID to identify managed object.
 	 */
-	public $element = 'hospedaje';
+	public $element = 'zonas';
 
 	/**
 	 * @var string Name of table without prefix where object is stored. This is also the key used for extrafields management.
 	 */
-	public $table_element = 'hospedaje_hospedaje';
+	public $table_element = 'hospedaje_zonas';
 
 	/**
 	 * @var int  Does this object support multicompany module ?
@@ -59,9 +59,9 @@ class Hospedaje extends CommonObject
 	public $isextrafieldmanaged = 1;
 
 	/**
-	 * @var string String with name of icon for hospedaje. Must be the part after the 'object_' into object_hospedaje.png
+	 * @var string String with name of icon for zonas. Must be the part after the 'object_' into object_zonas.png
 	 */
-	public $picto = 'hospedaje@hospedaje';
+	public $picto = 'zonas@hospedaje';
 
 
 	const STATUS_DRAFT = 0;
@@ -70,7 +70,7 @@ class Hospedaje extends CommonObject
 
 
 	/**
-	 *  'type' field format ('integer', 'integer:ObjectClass:PathToClass[:AddCreateButtonOrNot[:Filter]]', 'sellist:TableName:LabelFieldName[:KeyFieldName[:KeyFieldParent[:Filter]]]', 'varchar(x)', 'double(24,8)', 'real', 'price', 'text', 'text:none', 'html', 'date', 'datetime', 'timestamp', 'duration', 'mail', 'phone', 'url', 'password')
+	 *  'type' field format ('integer', 'integer:ObjectClass:PathToClass[:AddCreateButtonOrNot[:Filter[:Sortfield]]]', 'sellist:TableName:LabelFieldName[:KeyFieldName[:KeyFieldParent[:Filter[:Sortfield]]]]', 'varchar(x)', 'double(24,8)', 'real', 'price', 'text', 'text:none', 'html', 'date', 'datetime', 'timestamp', 'duration', 'mail', 'phone', 'url', 'password')
 	 *         Note: Filter can be a string like "(t.ref:like:'SO-%') or (t.date_creation:<:'20160101') or (t.nature:is:NULL)"
 	 *  'label' the translation key.
 	 *  'picto' is code of a picto to show before value in forms
@@ -83,7 +83,7 @@ class Hospedaje extends CommonObject
 	 *  'index' if we want an index in database.
 	 *  'foreignkey'=>'tablename.field' if the field is a foreign key (it is recommanded to name the field fk_...).
 	 *  'searchall' is 1 if we want to search in this field when making a search from the quick search button.
-	 *  'isameasure' must be set to 1 if you want to have a total on list for this field. Field type must be summable like integer or double(24,8).
+	 *  'isameasure' must be set to 1 or 2 if field can be used for measure. Field type must be summable like integer or double(24,8). Use 1 in most cases, or 2 if you don't want to see the column total into list (for example for percentage)
 	 *  'css' and 'cssview' and 'csslist' is the CSS style to use on field. 'css' is used in creation and update. 'cssview' is used in view mode. 'csslist' is used for columns in lists. For example: 'css'=>'minwidth300 maxwidth500 widthcentpercentminusx', 'cssview'=>'wordbreak', 'csslist'=>'tdoverflowmax200'
 	 *  'help' is a 'TranslationString' to use to show a tooltip on field. You can also use 'TranslationString:keyfortooltiponlick' for a tooltip on click.
 	 *  'showoncombobox' if value of the field must be visible into the label of the combobox that list record
@@ -91,6 +91,8 @@ class Hospedaje extends CommonObject
 	 *  'arrayofkeyval' to set a list of values if type is a list of predefined values. For example: array("0"=>"Draft","1"=>"Active","-1"=>"Cancel"). Note that type can be 'integer' or 'varchar'
 	 *  'autofocusoncreate' to have field having the focus on a create form. Only 1 field should have this property set to 1.
 	 *  'comment' is not used. You can store here any text of your choice. It is not used by application.
+	 *	'validate' is 1 if need to validate with $this->validateField()
+	 *  'copytoclipboard' is 1 or 2 to allow to add a picto to copy value into clipboard (1=picto after label, 2=picto after value)
 	 *
 	 *  Note: To have value dynamic, you can set value to 0 in definition and edit the value on the fly into the constructor.
 	 */
@@ -101,42 +103,28 @@ class Hospedaje extends CommonObject
 	 */
 	public $fields=array(
 		'rowid' => array('type'=>'integer', 'label'=>'TechnicalID', 'enabled'=>'1', 'position'=>1, 'notnull'=>1, 'visible'=>0, 'noteditable'=>'1', 'index'=>1, 'css'=>'left', 'comment'=>"Id"),
-		'ref' => array('type'=>'varchar(128)', 'label'=>'Ref', 'enabled'=>'1', 'position'=>20, 'notnull'=>1, 'visible'=>4, 'noteditable'=>'1', 'default'=>'(PROV)', 'index'=>1, 'searchall'=>1, 'comment'=>"Reference of object"),
-		'amount' => array('type'=>'price', 'label'=>'Amount', 'enabled'=>'1', 'position'=>40, 'notnull'=>0, 'visible'=>1, 'default'=>'null', 'isameasure'=>'1', 'help'=>"Help text for amount",),
-		'qty' => array('type'=>'real', 'label'=>'Qty', 'enabled'=>'1', 'position'=>45, 'notnull'=>0, 'visible'=>1, 'default'=>'0', 'isameasure'=>'1', 'css'=>'maxwidth75imp', 'help'=>"Help text for quantity",),
-		'fk_soc' => array('type'=>'integer:Societe:societe/class/societe.class.php:1:status=1 AND entity IN (__SHARED_ENTITIES__)', 'label'=>'ThirdParty', 'enabled'=>'1', 'position'=>0, 'notnull'=>-1, 'visible'=>1, 'index'=>1, 'help'=>"LinkToThirparty",),
-		'description' => array('type'=>'text', 'label'=>'Description', 'enabled'=>'1', 'position'=>60, 'notnull'=>0, 'visible'=>0,),
-		'note_public' => array('type'=>'html', 'label'=>'NotePublic', 'enabled'=>'1', 'position'=>61, 'notnull'=>0, 'visible'=>0,),
-		'note_private' => array('type'=>'html', 'label'=>'NotePrivate', 'enabled'=>'1', 'position'=>62, 'notnull'=>0, 'visible'=>0,),
-		'date_creation' => array('type'=>'datetime', 'label'=>'DateCreation', 'enabled'=>'1', 'position'=>500, 'notnull'=>1, 'visible'=>-2,),
-		'tms' => array('type'=>'timestamp', 'label'=>'DateModification', 'enabled'=>'1', 'position'=>501, 'notnull'=>0, 'visible'=>-2,),
-		'fk_user_creat' => array('type'=>'integer:User:user/class/user.class.php', 'label'=>'UserAuthor', 'enabled'=>'1', 'position'=>510, 'notnull'=>1, 'visible'=>-2, 'foreignkey'=>'user.rowid',),
-		'fk_user_modif' => array('type'=>'integer:User:user/class/user.class.php', 'label'=>'UserModif', 'enabled'=>'1', 'position'=>511, 'notnull'=>-1, 'visible'=>-2,),
-		'last_main_doc' => array('type'=>'varchar(255)', 'label'=>'LastMainDoc', 'enabled'=>'1', 'position'=>600, 'notnull'=>0, 'visible'=>0,),
-		'import_key' => array('type'=>'varchar(14)', 'label'=>'ImportId', 'enabled'=>'1', 'position'=>1000, 'notnull'=>-1, 'visible'=>-2,),
-		'model_pdf' => array('type'=>'varchar(255)', 'label'=>'Model pdf', 'enabled'=>'1', 'position'=>1010, 'notnull'=>-1, 'visible'=>0,),
-		'status' => array('type'=>'smallint', 'label'=>'Status', 'enabled'=>'1', 'position'=>1000, 'notnull'=>1, 'visible'=>1, 'index'=>1, 'arrayofkeyval'=>array('0'=>'Borrador', '1'=>'Validado', '9'=>'Cancelado'),),
-		'fecha_ingreso' => array('type'=>'datetime', 'label'=>'Fecha de Ingreso', 'enabled'=>'1', 'position'=>5, 'notnull'=>1, 'visible'=>1, 'index'=>1, 'help'=>"Fecha de Ingreso",),
-		'fecha_egreso' => array('type'=>'datetime', 'label'=>'Fecha de Sallida', 'enabled'=>'1', 'position'=>6, 'notnull'=>1, 'visible'=>1, 'help'=>"Fecha de Egreso",),
+		'label' => array('type'=>'varchar(255)', 'label'=>'Label', 'enabled'=>'1', 'position'=>30, 'notnull'=>0, 'visible'=>1, 'searchall'=>1, 'css'=>'minwidth300', 'cssview'=>'wordbreak', 'help'=>"Help text", 'validate'=>'1',),
+		'leftpos' => array('type'=>'double(24,8)', 'label'=>'leftpos', 'enabled'=>'1', 'position'=>31, 'notnull'=>0, 'visible'=>-1,),
+		'toppos' => array('type'=>'double(24,8)', 'label'=>'toppos', 'enabled'=>'1', 'position'=>32, 'notnull'=>0, 'visible'=>-1,),
+		'zone' => array('type'=>'integer', 'label'=>'zone', 'enabled'=>'1', 'position'=>33, 'notnull'=>0, 'visible'=>-1,),
+		'startdate' => array('type'=>'varchar(255)', 'label'=>'startdate', 'enabled'=>'1', 'position'=>35, 'notnull'=>-1, 'visible'=>-1,),
+		'enddate' => array('type'=>'varchar(255)', 'label'=>'enddate', 'enabled'=>'1', 'position'=>36, 'notnull'=>-1, 'visible'=>-1,),
+		'active' => array('type'=>'integer', 'label'=>'active', 'enabled'=>'1', 'position'=>37, 'notnull'=>1, 'visible'=>-1, 'default'=>'0',),
+		'invoideid' => array('type'=>'integer:Facture:compta/facture/class/facture.class.php', 'label'=>'invoideid', 'enabled'=>'1', 'position'=>38, 'notnull'=>1, 'visible'=>-1, 'default'=>'0',),
+		'fk_user_creat' => array('type'=>'integer:User:user/class/user.class.php', 'label'=>'UserAuthor', 'enabled'=>'1', 'position'=>39, 'notnull'=>1, 'visible'=>-2, 'foreignkey'=>'user.rowid',),
+		'tms' => array('type'=>'timestamp', 'label'=>'DateCreatin', 'enabled'=>'1', 'position'=>40, 'notnull'=>0, 'visible'=>-2,),
 	);
 	public $rowid;
-	public $ref;
-	public $amount;
-	public $qty;
-	public $fk_soc;
-	public $description;
-	public $note_public;
-	public $note_private;
-	public $date_creation;
-	public $tms;
+	public $label;
+	public $leftpos;
+	public $toppos;
+	public $zone;
+	public $startdate;
+	public $enddate;
+	public $active;
+	public $invoideid;
 	public $fk_user_creat;
-	public $fk_user_modif;
-	public $last_main_doc;
-	public $import_key;
-	public $model_pdf;
-	public $status;
-	public $fecha_ingreso;
-	public $fecha_egreso;
+	public $tms;
 	// END MODULEBUILDER PROPERTIES
 
 
@@ -145,17 +133,17 @@ class Hospedaje extends CommonObject
 	// /**
 	//  * @var string    Name of subtable line
 	//  */
-	// public $table_element_line = 'hospedaje_hospedajeline';
+	// public $table_element_line = 'hospedaje_zonasline';
 
 	// /**
 	//  * @var string    Field with ID of parent key if this object has a parent
 	//  */
-	// public $fk_element = 'fk_hospedaje';
+	// public $fk_element = 'fk_zonas';
 
 	// /**
 	//  * @var string    Name of subtable class that manage subtable lines
 	//  */
-	// public $class_element_line = 'Hospedajeline';
+	// public $class_element_line = 'Zonasline';
 
 	// /**
 	//  * @var array	List of child tables. To test if we can delete object.
@@ -167,10 +155,10 @@ class Hospedaje extends CommonObject
 	//  *               If name matches '@ClassNAme:FilePathClass;ParentFkFieldName' it will
 	//  *               call method deleteByParentField(parentId, ParentFkFieldName) to fetch and delete child object
 	//  */
-	// protected $childtablesoncascade = array('hospedaje_hospedajedet');
+	// protected $childtablesoncascade = array('hospedaje_zonasdet');
 
 	// /**
-	//  * @var HospedajeLine[]     Array of subtable lines
+	//  * @var ZonasLine[]     Array of subtable lines
 	//  */
 	// public $lines = array();
 
@@ -195,7 +183,7 @@ class Hospedaje extends CommonObject
 		}
 
 		// Example to show how to set values of fields definition dynamically
-		/*if ($user->rights->hospedaje->hospedaje->read) {
+		/*if ($user->rights->hospedaje->zonas->read) {
 			$this->fields['myfield']['visible'] = 1;
 			$this->fields['myfield']['noteditable'] = 0;
 		}*/
@@ -315,7 +303,7 @@ class Hospedaje extends CommonObject
 
 		if (!$error) {
 			// copy external contacts if same company
-			if (property_exists($this, 'fk_soc') && $this->fk_soc == $object->socid) {
+			if (!empty($object->socid) && property_exists($this, 'fk_soc') && $this->fk_soc == $object->socid) {
 				if ($this->copy_linked_contact($object, 'external') < 0) {
 					$error++;
 				}
@@ -349,6 +337,53 @@ class Hospedaje extends CommonObject
 		}
 		return $result;
 	}
+	
+	/**
+	 * 
+	 * @param int $idzone
+	 * @return boolean|resource
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 * 
+	 */
+	public function fetchActives($idzone)
+	{
+	    $sql = "SELECT rowid";
+	    $sql .= " FROM ".MAIN_DB_PREFIX.$this->table_element." as t";
+	    $sql .= " WHERE t.zone = ".((int)$idzone)." AND t.active = 1 ";
+	    $result = $this->db->query($sql);
+	    return $result;
+	}
+	
+	public function fetchFacturePay($invoiceid)
+	{
+	   $sql = 'SELECT rowid, paye FROM '.MAIN_DB_PREFIX.'facture WHERE rowid = '.$invoiceid.' ';
+	   $sql .= ' AND paye = 1';
+	   $resql = $db->query($sql);
+	   return $resql;
+	}
+	
+	/*public function getIdZoneAndUpdateDate( $invoiceid, $startdate = null , $enddate = null ){
+	    $sql = "SELECT rowid FROM ".MAIN_DB_PREFIX.$this->table_element." WHERE invoideid = ".(int)$invoiceid." AND active = 1 ";
+	    $resql = $db->query($sql);
+	    $object = $db->fetch_object($resql);
+	    if ($resql) {
+	        $db->query("UPDATE ".MAIN_DB_PREFIX.$this->table_element." SET startdate=".trim($startdate).",enddate=".trim($enddate)."  WHERE rowid=".((int)$object->rowid)."   ");
+	        return 1;
+	    }else{
+	        return 0;
+	    }
+	    
+	}*/
+	
+	
 
 	/**
 	 * Load object lines in memory from the database
@@ -383,40 +418,40 @@ class Hospedaje extends CommonObject
 
 		$records = array();
 
-		$sql = 'SELECT ';
+		$sql = "SELECT ";
 		$sql .= $this->getFieldList('t');
-		$sql .= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
+		$sql .= " FROM ".MAIN_DB_PREFIX.$this->table_element." as t";
 		if (isset($this->ismultientitymanaged) && $this->ismultientitymanaged == 1) {
-			$sql .= ' WHERE t.entity IN ('.getEntity($this->table_element).')';
+			$sql .= " WHERE t.entity IN (".getEntity($this->table_element).")";
 		} else {
-			$sql .= ' WHERE 1 = 1';
+			$sql .= " WHERE 1 = 1";
 		}
 		// Manage filter
 		$sqlwhere = array();
 		if (count($filter) > 0) {
 			foreach ($filter as $key => $value) {
 				if ($key == 't.rowid') {
-					$sqlwhere[] = $key.'='.$value;
+					$sqlwhere[] = $key." = ".((int) $value);
 				} elseif (in_array($this->fields[$key]['type'], array('date', 'datetime', 'timestamp'))) {
-					$sqlwhere[] = $key.' = \''.$this->db->idate($value).'\'';
+					$sqlwhere[] = $key." = '".$this->db->idate($value)."'";
 				} elseif ($key == 'customsql') {
 					$sqlwhere[] = $value;
 				} elseif (strpos($value, '%') === false) {
-					$sqlwhere[] = $key.' IN ('.$this->db->sanitize($this->db->escape($value)).')';
+					$sqlwhere[] = $key." IN (".$this->db->sanitize($this->db->escape($value)).")";
 				} else {
-					$sqlwhere[] = $key.' LIKE \'%'.$this->db->escape($value).'%\'';
+					$sqlwhere[] = $key." LIKE '%".$this->db->escape($value)."%'";
 				}
 			}
 		}
 		if (count($sqlwhere) > 0) {
-			$sql .= ' AND ('.implode(' '.$filtermode.' ', $sqlwhere).')';
+			$sql .= " AND (".implode(" ".$filtermode." ", $sqlwhere).")";
 		}
 
 		if (!empty($sortfield)) {
 			$sql .= $this->db->order($sortfield, $sortorder);
 		}
 		if (!empty($limit)) {
-			$sql .= ' '.$this->db->plimit($limit, $offset);
+			$sql .= $this->db->plimit($limit, $offset);
 		}
 
 		$resql = $this->db->query($sql);
@@ -509,8 +544,8 @@ class Hospedaje extends CommonObject
 			return 0;
 		}
 
-		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->hospedaje->hospedaje->write))
-		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->hospedaje->hospedaje->hospedaje_advance->validate))))
+		/*if (! ((empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->hospedaje->zonas->write))
+		 || (! empty($conf->global->MAIN_USE_ADVANCED_PERMS) && ! empty($user->rights->hospedaje->zonas->zonas_advance->validate))))
 		 {
 		 $this->error='NotEnoughPermissions';
 		 dol_syslog(get_class($this)."::valid ".$this->error, LOG_ERR);
@@ -552,7 +587,7 @@ class Hospedaje extends CommonObject
 
 			if (!$error && !$notrigger) {
 				// Call trigger
-				$result = $this->call_trigger('HOSPEDAJE_VALIDATE', $user);
+				$result = $this->call_trigger('ZONAS_VALIDATE', $user);
 				if ($result < 0) {
 					$error++;
 				}
@@ -566,8 +601,8 @@ class Hospedaje extends CommonObject
 			// Rename directory if dir was a temporary ref
 			if (preg_match('/^[\(]?PROV/i', $this->ref)) {
 				// Now we rename also files into index
-				$sql = 'UPDATE '.MAIN_DB_PREFIX."ecm_files set filename = CONCAT('".$this->db->escape($this->newref)."', SUBSTR(filename, ".(strlen($this->ref) + 1).")), filepath = 'hospedaje/".$this->db->escape($this->newref)."'";
-				$sql .= " WHERE filename LIKE '".$this->db->escape($this->ref)."%' AND filepath = 'hospedaje/".$this->db->escape($this->ref)."' and entity = ".$conf->entity;
+				$sql = 'UPDATE '.MAIN_DB_PREFIX."ecm_files set filename = CONCAT('".$this->db->escape($this->newref)."', SUBSTR(filename, ".(strlen($this->ref) + 1).")), filepath = 'zonas/".$this->db->escape($this->newref)."'";
+				$sql .= " WHERE filename LIKE '".$this->db->escape($this->ref)."%' AND filepath = 'zonas/".$this->db->escape($this->ref)."' and entity = ".$conf->entity;
 				$resql = $this->db->query($sql);
 				if (!$resql) {
 					$error++; $this->error = $this->db->lasterror();
@@ -576,15 +611,15 @@ class Hospedaje extends CommonObject
 				// We rename directory ($this->ref = old ref, $num = new ref) in order not to lose the attachments
 				$oldref = dol_sanitizeFileName($this->ref);
 				$newref = dol_sanitizeFileName($num);
-				$dirsource = $conf->hospedaje->dir_output.'/hospedaje/'.$oldref;
-				$dirdest = $conf->hospedaje->dir_output.'/hospedaje/'.$newref;
+				$dirsource = $conf->hospedaje->dir_output.'/zonas/'.$oldref;
+				$dirdest = $conf->hospedaje->dir_output.'/zonas/'.$newref;
 				if (!$error && file_exists($dirsource)) {
 					dol_syslog(get_class($this)."::validate() rename dir ".$dirsource." into ".$dirdest);
 
 					if (@rename($dirsource, $dirdest)) {
 						dol_syslog("Rename ok");
 						// Rename docs starting with $oldref with $newref
-						$listoffiles = dol_dir_list($conf->hospedaje->dir_output.'/hospedaje/'.$newref, 'files', 1, '^'.preg_quote($oldref, '/'));
+						$listoffiles = dol_dir_list($conf->hospedaje->dir_output.'/zonas/'.$newref, 'files', 1, '^'.preg_quote($oldref, '/'));
 						foreach ($listoffiles as $fileentry) {
 							$dirsource = $fileentry['name'];
 							$dirdest = preg_replace('/^'.preg_quote($oldref, '/').'/', $newref, $dirsource);
@@ -634,7 +669,7 @@ class Hospedaje extends CommonObject
 		 return -1;
 		 }*/
 
-		return $this->setStatusCommon($user, self::STATUS_DRAFT, $notrigger, 'HOSPEDAJE_UNVALIDATE');
+		return $this->setStatusCommon($user, self::STATUS_DRAFT, $notrigger, 'ZONAS_UNVALIDATE');
 	}
 
 	/**
@@ -658,7 +693,7 @@ class Hospedaje extends CommonObject
 		 return -1;
 		 }*/
 
-		return $this->setStatusCommon($user, self::STATUS_CANCELED, $notrigger, 'HOSPEDAJE_CANCEL');
+		return $this->setStatusCommon($user, self::STATUS_CANCELED, $notrigger, 'ZONAS_CANCEL');
 	}
 
 	/**
@@ -682,7 +717,7 @@ class Hospedaje extends CommonObject
 		 return -1;
 		 }*/
 
-		return $this->setStatusCommon($user, self::STATUS_VALIDATED, $notrigger, 'HOSPEDAJE_REOPEN');
+		return $this->setStatusCommon($user, self::STATUS_VALIDATED, $notrigger, 'ZONAS_REOPEN');
 	}
 
 	/**
@@ -705,14 +740,14 @@ class Hospedaje extends CommonObject
 
 		$result = '';
 
-		$label = img_picto('', $this->picto).' <u>'.$langs->trans("Hospedaje").'</u>';
+		$label = img_picto('', $this->picto).' <u>'.$langs->trans("Zonas").'</u>';
 		if (isset($this->status)) {
 			$label .= ' '.$this->getLibStatut(5);
 		}
 		$label .= '<br>';
 		$label .= '<b>'.$langs->trans('Ref').':</b> '.$this->ref;
 
-		$url = dol_buildpath('/hospedaje/hospedaje_card.php', 1).'?id='.$this->id;
+		$url = dol_buildpath('/hospedaje/zonas_card.php', 1).'?id='.$this->id;
 
 		if ($option != 'nolink') {
 			// Add param to save lastsearch_values or not
@@ -720,7 +755,7 @@ class Hospedaje extends CommonObject
 			if ($save_lastsearch_value == -1 && preg_match('/list\.php/', $_SERVER["PHP_SELF"])) {
 				$add_save_lastsearch_values = 1;
 			}
-			if ($add_save_lastsearch_values) {
+			if ($url && $add_save_lastsearch_values) {
 				$url .= '&save_lastsearch_values=1';
 			}
 		}
@@ -728,7 +763,7 @@ class Hospedaje extends CommonObject
 		$linkclose = '';
 		if (empty($notooltip)) {
 			if (!empty($conf->global->MAIN_OPTIMIZEFORTEXTBROWSER)) {
-				$label = $langs->trans("ShowHospedaje");
+				$label = $langs->trans("ShowZonas");
 				$linkclose .= ' alt="'.dol_escape_htmltag($label, 1).'"';
 			}
 			$linkclose .= ' title="'.dol_escape_htmltag($label, 1).'"';
@@ -737,13 +772,13 @@ class Hospedaje extends CommonObject
 			$linkclose = ($morecss ? ' class="'.$morecss.'"' : '');
 		}
 
-		if ($option == 'nolink') {
+		if ($option == 'nolink' || empty($url)) {
 			$linkstart = '<span';
 		} else {
 			$linkstart = '<a href="'.$url.'"';
 		}
 		$linkstart .= $linkclose.'>';
-		if ($option == 'nolink') {
+		if ($option == 'nolink' || empty($url)) {
 			$linkend = '</span>';
 		} else {
 			$linkend = '</a>';
@@ -788,7 +823,7 @@ class Hospedaje extends CommonObject
 		//if ($withpicto != 2) $result.=(($addlabel && $this->label) ? $sep . dol_trunc($this->label, ($addlabel > 1 ? $addlabel : 0)) : '');
 
 		global $action, $hookmanager;
-		$hookmanager->initHooks(array('hospedajedao'));
+		$hookmanager->initHooks(array('zonasdao'));
 		$parameters = array('id'=>$this->id, 'getnomurl'=>$result);
 		$reshook = $hookmanager->executeHooks('getNomUrl', $parameters, $this, $action); // Note that $action and $object may have been modified by some hooks
 		if ($reshook > 0) {
@@ -836,12 +871,12 @@ class Hospedaje extends CommonObject
 		if (empty($this->labelStatus) || empty($this->labelStatusShort)) {
 			global $langs;
 			//$langs->load("hospedaje@hospedaje");
-			$this->labelStatus[self::STATUS_DRAFT] = $langs->trans('Draft');
-			$this->labelStatus[self::STATUS_VALIDATED] = $langs->trans('Enabled');
-			$this->labelStatus[self::STATUS_CANCELED] = $langs->trans('Disabled');
-			$this->labelStatusShort[self::STATUS_DRAFT] = $langs->trans('Draft');
-			$this->labelStatusShort[self::STATUS_VALIDATED] = $langs->trans('Enabled');
-			$this->labelStatusShort[self::STATUS_CANCELED] = $langs->trans('Disabled');
+			$this->labelStatus[self::STATUS_DRAFT] = $langs->transnoentitiesnoconv('Draft');
+			$this->labelStatus[self::STATUS_VALIDATED] = $langs->transnoentitiesnoconv('Enabled');
+			$this->labelStatus[self::STATUS_CANCELED] = $langs->transnoentitiesnoconv('Disabled');
+			$this->labelStatusShort[self::STATUS_DRAFT] = $langs->transnoentitiesnoconv('Draft');
+			$this->labelStatusShort[self::STATUS_VALIDATED] = $langs->transnoentitiesnoconv('Enabled');
+			$this->labelStatusShort[self::STATUS_CANCELED] = $langs->transnoentitiesnoconv('Disabled');
 		}
 
 		$statusType = 'status'.$status;
@@ -861,28 +896,29 @@ class Hospedaje extends CommonObject
 	 */
 	public function info($id)
 	{
-		$sql = 'SELECT rowid, date_creation as datec, tms as datem,';
-		$sql .= ' fk_user_creat, fk_user_modif';
-		$sql .= ' FROM '.MAIN_DB_PREFIX.$this->table_element.' as t';
-		$sql .= ' WHERE t.rowid = '.((int) $id);
+		$sql = "SELECT rowid, date_creation as datec, tms as datem,";
+		$sql .= " fk_user_creat, fk_user_modif";
+		$sql .= " FROM ".MAIN_DB_PREFIX.$this->table_element." as t";
+		$sql .= " WHERE t.rowid = ".((int) $id);
+
 		$result = $this->db->query($sql);
 		if ($result) {
 			if ($this->db->num_rows($result)) {
 				$obj = $this->db->fetch_object($result);
 				$this->id = $obj->rowid;
-				if ($obj->fk_user_author) {
+				if (!empty($obj->fk_user_author)) {
 					$cuser = new User($this->db);
 					$cuser->fetch($obj->fk_user_author);
 					$this->user_creation = $cuser;
 				}
 
-				if ($obj->fk_user_valid) {
+				if (!empty($obj->fk_user_valid)) {
 					$vuser = new User($this->db);
 					$vuser->fetch($obj->fk_user_valid);
 					$this->user_validation = $vuser;
 				}
 
-				if ($obj->fk_user_cloture) {
+				if (!empty($obj->fk_user_cloture)) {
 					$cluser = new User($this->db);
 					$cluser->fetch($obj->fk_user_cloture);
 					$this->user_cloture = $cluser;
@@ -923,12 +959,12 @@ class Hospedaje extends CommonObject
 	{
 		$this->lines = array();
 
-		$objectline = new HospedajeLine($this->db);
-		$result = $objectline->fetchAll('ASC', 'position', 0, 0, array('customsql'=>'fk_hospedaje = '.((int) $this->id)));
+		$objectline = new ZonasLine($this->db);
+		$result = $objectline->fetchAll('ASC', 'position', 0, 0, array('customsql'=>'fk_zonas = '.((int) $this->id)));
 
 		if (is_numeric($result)) {
-			$this->error = $this->error;
-			$this->errors = $this->errors;
+			$this->error = $objectline->error;
+			$this->errors = $objectline->errors;
 			return $result;
 		} else {
 			$this->lines = $result;
@@ -946,15 +982,15 @@ class Hospedaje extends CommonObject
 		global $langs, $conf;
 		$langs->load("hospedaje@hospedaje");
 
-		if (empty($conf->global->HOSPEDAJE_HOSPEDAJE_ADDON)) {
-			$conf->global->HOSPEDAJE_HOSPEDAJE_ADDON = 'mod_hospedaje_standard';
+		if (empty($conf->global->HOSPEDAJE_ZONAS_ADDON)) {
+			$conf->global->HOSPEDAJE_ZONAS_ADDON = 'mod_zonas_standard';
 		}
 
-		if (!empty($conf->global->HOSPEDAJE_HOSPEDAJE_ADDON)) {
+		if (!empty($conf->global->HOSPEDAJE_ZONAS_ADDON)) {
 			$mybool = false;
 
-			$file = $conf->global->HOSPEDAJE_HOSPEDAJE_ADDON.".php";
-			$classname = $conf->global->HOSPEDAJE_HOSPEDAJE_ADDON;
+			$file = $conf->global->HOSPEDAJE_ZONAS_ADDON.".php";
+			$classname = $conf->global->HOSPEDAJE_ZONAS_ADDON;
 
 			// Include file with class
 			$dirmodels = array_merge(array('/'), (array) $conf->modules_parts['models']);
@@ -1007,17 +1043,17 @@ class Hospedaje extends CommonObject
 		global $conf, $langs;
 
 		$result = 0;
-		$includedocgeneration = 1;
+		$includedocgeneration = 0;
 
 		$langs->load("hospedaje@hospedaje");
 
 		if (!dol_strlen($modele)) {
-			$modele = 'standard_hospedaje';
+			$modele = 'standard_zonas';
 
 			if (!empty($this->model_pdf)) {
 				$modele = $this->model_pdf;
-			} elseif (!empty($conf->global->HOSPEDAJE_ADDON_PDF)) {
-				$modele = $conf->global->HOSPEDAJE_ADDON_PDF;
+			} elseif (!empty($conf->global->ZONAS_ADDON_PDF)) {
+				$modele = $conf->global->ZONAS_ADDON_PDF;
 			}
 		}
 
@@ -1065,12 +1101,12 @@ class Hospedaje extends CommonObject
 require_once DOL_DOCUMENT_ROOT.'/core/class/commonobjectline.class.php';
 
 /**
- * Class HospedajeLine. You can also remove this and generate a CRUD class for lines objects.
+ * Class ZonasLine. You can also remove this and generate a CRUD class for lines objects.
  */
-class HospedajeLine extends CommonObjectLine
+class ZonasLine extends CommonObjectLine
 {
-	// To complete with content of an object HospedajeLine
-	// We should have a field rowid, fk_hospedaje and position
+	// To complete with content of an object ZonasLine
+	// We should have a field rowid, fk_zonas and position
 
 	/**
 	 * @var int  Does object support extrafields ? 0=No, 1=Yes
