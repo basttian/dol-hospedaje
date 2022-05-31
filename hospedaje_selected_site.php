@@ -69,8 +69,7 @@ if ($action == "getTables") {
     while ($row = $db->fetch_array($resql)) {
         $invoice = new Facture($db);
         $result = $invoice->fetch($row['invoideid']);
-        
-        if ($result > 0 || ((int)$row['enddate'] >= $now  && (int)$row['active'] == 1 ) ){
+        if ($result > 0 && ((int)$row['enddate'] >= $now  && (int)$row['active'] == 1 ) ){
             $row['occupied'] = "red";
         }
         $rows[] = $row;
@@ -145,7 +144,6 @@ if($action == 'updateDates' && !empty($invoiceid)){
         }
 }
 
-
 if($action == 'getzone'){
     
     if (!empty($invoideid)) {
@@ -162,6 +160,20 @@ if($action == 'getzone'){
     echo json_encode(array('label'=>0,'zone'=>0));
     exit;
     //the end
+}
+
+/*revisar #310520221133*/
+if($action == 'consulta'){
+    $query = "SELECT enddate FROM ".MAIN_DB_PREFIX."hospedaje_zonas WHERE invoideid=".((int)$invoiceid);
+    $elements = $db->fetch_row($db->query($query));
+    if(is_array($elements)){
+        echo json_encode((int)implode($elements));
+       exit; 
+    }else{
+        echo json_encode($now);
+        exit;
+    }
+    
 }
 
 
@@ -258,28 +270,46 @@ function LoadPlace(zoneid, invoiceid){
                console.log(error);
         }
 	});*/
-	$.ajax({
-		type: "POST",
-		url: "<?php echo DOL_URL_ROOT.'/custom/hospedaje/hospedaje_selected_site.php'; ?>",
-		data: { action: "updateplace", place: zoneid, invoiceid: invoiceid , token: '<?php echo currentToken(); ?>' }
-	}).done(function( response ) {
-		//console.log(response);
-		//window.location.href='hospedaje_selected_site.php?action=getzone&invoideid='+invoiceid+'&token=<?php echo currentToken(); ?>';
-		$.ajax({
-			type: "GET",
-			url: "<?php echo DOL_URL_ROOT; ?>/custom/hospedaje/hospedaje_selected_site.php",
-			data: { action: "getzone", invoideid: invoiceid, token:'<?php echo currentToken(); ?>' }
-		}).done(function( data ) {
-			console.log(data);
-			var jsonresponse = JSON.parse(data);
-			parent.$("#poslines").load("<?php echo DOL_URL_ROOT; ?>/takepos/invoice.php", function() {
-				$(this).find("tr:eq(1)").click().addClass("selected");
-				parent.$( "#placesel" ).html("<b>&nbsp;"+jsonresponse.label+"</b>");
-				parent.$( "#zonesel" ).html("<b>&nbsp;"+jsonresponse.zone+"</b>");
-    			parent.$.colorbox.close();
-            });
+
+	$.getJSON( "<?php echo DOL_URL_ROOT.'/custom/hospedaje/hospedaje_selected_site.php'; ?>", 
+			{ action: "consulta" , invoiceid: invoiceid, token: '<?php echo currentToken(); ?>' } ,function( respuesta ) {
+			 	console.log( respuesta >= moment().valueOf() );
+			 	/*Si ya se ha seleccionado un lugar se compara con la fecha actual y si es verdadero se elimina toda la factura*/
+			 	if(respuesta >= moment().valueOf()){
+			 		parent.$("#poslines").load("<?php echo DOL_URL_ROOT; ?>/takepos/invoice.php", function() {
+			 			$(this).find("tr:gt(0)").click().addClass("selected", function(){
+			 				$(this).find("tr:eq(0)").click().addClass("selected");
+			 				parent.$("#delete").click();
+			 				parent.$.colorbox.close();
+				 		});
+			 			
+		            });
+				}else{
+					/*Si no hay seleccionado un lugar se ejecuta estas instrucciones*/
+					$.ajax({
+						type: "POST",
+						url: "<?php echo DOL_URL_ROOT.'/custom/hospedaje/hospedaje_selected_site.php'; ?>",
+						data: { action: "updateplace", place: zoneid, invoiceid: invoiceid , token: '<?php echo currentToken(); ?>' }
+					}).done(function( response ) {
+						//console.log(response);
+						//window.location.href='hospedaje_selected_site.php?action=getzone&invoideid='+invoiceid+'&token=<?php echo currentToken(); ?>';
+						$.ajax({
+							type: "GET",
+							url: "<?php echo DOL_URL_ROOT; ?>/custom/hospedaje/hospedaje_selected_site.php",
+							data: { action: "getzone", invoideid: invoiceid, token:'<?php echo currentToken(); ?>' }
+						}).done(function( data ) {
+							console.log(data);
+							var jsonresponse = JSON.parse(data);
+							parent.$("#poslines").load("<?php echo DOL_URL_ROOT; ?>/takepos/invoice.php", function() {
+								$(this).find("tr:eq(1)").click().addClass("selected");
+								parent.$( "#placesel" ).html("<b>&nbsp;"+jsonresponse.label+"</b>");
+								parent.$( "#zonesel" ).html("<b>&nbsp;"+jsonresponse.zone+"</b>");
+								parent.$.colorbox.close();
+				            });
+						});
+					});
+				}
 		});
-	});
 }
 
 $( document ).ready(function() {
@@ -294,12 +324,12 @@ $( document ).ready(function() {
 			$( "#tablename"+val.rowid ).draggable(
 				{
 					start: function() {
-					$("#add").html("<i class='icon icon-delete'></i>&nbsp;<?php echo $langs->trans("Deletezone"); ?>").addClass("btn btn-error");
+						$("#add").html("<i class='icon icon-delete'></i>&nbsp;<?php echo $langs->trans("Deletezone"); ?>").addClass("btn btn-error");
 					},
 					stop: function() {
-					var left=$(this).offset().left*100/$(window).width();
-					var top=$(this).offset().top*100/$(window).height();
-					updateplace($(this).attr('id').substr(9), left, top);
+    					var left=$(this).offset().left*100/$(window).width();
+    					var top=$(this).offset().top*100/$(window).height();
+    					updateplace($(this).attr('id').substr(9), left, top);
 					}
 				}
 			);
@@ -308,7 +338,7 @@ $( document ).ready(function() {
 				$(this).focus();
 			})
 			<?php } else {?>
-			$('body').append('<div class="tablediv '+val.occupied+'" onclick="LoadPlace('+val.rowid+','+invoiceid+');" style="position: absolute; left: '+val.leftpos+'%; top: '+val.toppos+'%;" id="tablename'+val.rowid+'">'+val.label+'</div>');
+				$('body').append('<div class="tablediv '+val.occupied+'" onclick="LoadPlace('+val.rowid+','+invoiceid+');" style="position: absolute; left: '+val.leftpos+'%; top: '+val.toppos+'%;" id="tablename'+val.rowid+'">'+val.label+'</div>');
 			<?php } ?>
 		});
 	});

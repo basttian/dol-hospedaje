@@ -459,6 +459,7 @@ class ActionsHOSPEDAJE
 			});
 			/**/
             jQuery(document).ready(function() {
+                /*
             	parent.$("#delete").on("click",function(event){
             		id = document.getElementById('invoiceid');
 	 				event.preventDefault();
@@ -472,6 +473,7 @@ class ActionsHOSPEDAJE
 	            				$( "#zonesel" ).html("<b>&nbsp;"+data.zone+"</b>");
 			 			});
 	 			});
+	 			*/
             });   
 		    
     		</script>

@@ -138,6 +138,7 @@ if (!empty($persons)) {
     					var descp = "<?php echo dol_escape_js($langs->transnoentities('Guest')); ?>";
     					parent.$("#poslines").load("<?php echo DOL_URL_ROOT; ?>/custom/hospedaje/hospedaje_actions.php?place=<?php echo $place; ?>&invoiceid=<?php echo $placeid; ?>&action=dayrow&desc="+descp+"&number=<?php echo $productid ;?>&qty=<?php echo $persons; ?>&descguest=<?php echo $guest ;?>", function() {
                             parent.$("#poslines").load("invoice.php?place=<?php echo $place; ?>&invoiceid=<?php echo $placeid ;?> ", function() {
+                            	parent.$(this).find("tr:eq(1)").click().addClass("selected");
                                 parent.$.colorbox.close();
        	                    });
     					});		

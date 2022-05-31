@@ -134,7 +134,8 @@ if (!empty($persons)) {
     					parent.$("#poslines").load("invoice.php?action=freezone&place=<?php echo $place; ?>&number=-"+<?php echo $row->total_ttc ;?>+"&desc="+descr, function() {
     					parent.$("#poslines").load("<?php echo DOL_URL_ROOT; ?>/custom/hospedaje/hospedaje_actions.php?place=<?php echo $place; ?>&invoiceid=<?php echo $placeid; ?>&action=dayrow&desc="+descp+"&number=<?php echo $row->total_ttc ;?>&qty=<?php echo $persons; ?>&descguest=0", function() {
 		                  parent.$("#poslines").load("invoice.php?place=<?php echo $place; ?>&invoiceid=<?php echo $placeid ;?> ", function() {
-                            parent.$.colorbox.close();
+		                	  parent.$(this).find("tr:eq(1)").click().addClass("selected");
+	                          parent.$.colorbox.close();
        	                  });
     					});		
     					});	
