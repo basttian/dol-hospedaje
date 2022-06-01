@@ -213,6 +213,7 @@ html {
     height: 100%;
 }
 body {
+    min-width: fit-content;
     min-height: 100%;
 }
 
@@ -237,7 +238,7 @@ body {
 
 
 $form = new Form($db);
-print '<div class="centrediv">';
+//print '<div class="centrediv">';
 
 
 print '<form action="'.$_SERVER["PHP_SELF"].'" method="POST" id="target" >';
@@ -325,7 +326,7 @@ print '</div>';
 print '<hr />';
 
 print '</form>';
-print '</div>';
+//print '</div>';
 ?>
 
 <script type="text/javascript" language="javascript">

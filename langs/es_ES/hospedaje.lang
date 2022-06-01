@@ -73,7 +73,7 @@ avisowindowszone = No se olvide de seleccionar una categoria.
 avisoDropZone = No se selecciono ningun tipo de lugar.
 zonextt1=Lugar: Cualquier.
 zonextt2=Lugar: 
-zonetxtheaderhelp=Seleccionar primero el lugar en caso de escoger alguno, luego proceder a seleccionar la fecha y por ultimo seleccionar las personas o invitados.
+zonetxtheaderhelp=Seleccionar primero el lugar en caso de escoger alguno, luego proceder a seleccionar la fecha y por ultimo seleccionar las personas.
 
 #
 # Sample widget
